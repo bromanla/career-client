@@ -4,13 +4,17 @@
 
 <style>
 
-html {
-  font-size: 14px;
-}
+/* html { */
+  /* font-size: 14px; */
+/* } */
 
 * {
   margin: 0;
   padding: 0;
+}
+
+body {
+  background: #f5f5f5;
 }
 
 #app {

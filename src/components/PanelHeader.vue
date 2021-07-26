@@ -11,9 +11,9 @@
           </el-button>
           <template #dropdown>
             <el-dropdown-menu>
-              <el-dropdown-item>
-                <router-link to="/login">Выйти</router-link>
-              </el-dropdown-item>
+               <router-link to="/login">
+                <el-dropdown-item>Выйти</el-dropdown-item>
+              </router-link>
             </el-dropdown-menu>
           </template>
         </el-dropdown>
