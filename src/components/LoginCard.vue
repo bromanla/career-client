@@ -1,12 +1,12 @@
 <template>
   <el-card shadow="always" header="Авторизация" >
-    <el-form ref="form" :model="form" label-position="top"  :rules="loginRules">
+    <el-form ref="form" :model="form" label-position="top" :rules="loginRules">
       <el-form-item label="Логин" prop="login">
-        <el-input v-model="form.login"></el-input>
+        <el-input v-model="form.login" suffix-icon="el-icon-user"></el-input>
       </el-form-item>
 
       <el-form-item label="Пароль" prop="password">
-        <el-input show-password v-model="form.password"></el-input>
+        <el-input show-password v-model="form.password" suffix-icon="el-icon-lock"></el-input>
       </el-form-item>
 
       <el-form-item>
@@ -39,16 +39,15 @@ export default {
     onSubmit() {
       this.$refs['form'].validate(async (valid) => {
         if (valid) {
-          // const { login, password } = this.form
-
-          await this.$store.dispatch('fetchLogin', this.form)
+          // await this.$store.dispatch('fetchLogin', this.form)
         } else {
           return false;
         }
       })
     }
   },
-  mounted() {
+  async mounted() {
+    //  await this.$store.dispatch('fetchLogin', {login: 'Vova', password: '4321'})
   }
 }
 </script>

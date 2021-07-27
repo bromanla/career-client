@@ -55,6 +55,5 @@ export default {
   .el-dropdown-menu a {
     color: inherit;
     text-decoration: none;
-    font-family: 'Helvetica Neue', Helvetica, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', Arial, sans-serif;
   }
 </style>
