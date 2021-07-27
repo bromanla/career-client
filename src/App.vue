@@ -3,13 +3,12 @@
 </template>
 
 <script>
-import axios from 'axios'
-import config from '@/config.js'
+import api from '@/api/instance.js'
 
 export default {
   async mounted() {
     try {
-      await axios.get(`${config.api}/api/health`)
+      await api.get('/health')
       console.info('Server available')
     } catch {
       await this.$alert('Попробуйте перезагрузить страницу', 'Сервер недоступен', {

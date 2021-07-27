@@ -11,3 +11,4 @@ createApp(App)
   .use(router)
   .use(elementPlus)
   .mount('#app')
+

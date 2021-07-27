@@ -39,7 +39,7 @@ export default {
     onSubmit() {
       this.$refs['form'].validate(async (valid) => {
         if (valid) {
-          // await this.$store.dispatch('fetchLogin', this.form)
+          // Query
         } else {
           return false;
         }
@@ -47,7 +47,10 @@ export default {
     }
   },
   async mounted() {
-    //  await this.$store.dispatch('fetchLogin', {login: 'Vova', password: '4321'})
+    await this.$store.dispatch('fetchLogin', {
+      login: 'Vova',
+      password: '4321'
+    })
   }
 }
 </script>

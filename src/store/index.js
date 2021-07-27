@@ -1,6 +1,6 @@
 import { createStore } from 'vuex'
-import axios from 'axios'
-import config from '@/config.js'
+
+import { auth } from '@/api'
 
 export default createStore({
   state: {
@@ -16,15 +16,13 @@ export default createStore({
   actions: {
     async fetchLogin(context, { login, password }) {
       try {
-        // const data = await axios.post('')
-        // const data = await axios.post('http://bromanla.local/api/auth/login', { login, password })
+        const data = await auth.login({ login, password })
 
-        // console.log(data)
+        console.log(data)
       } catch (e) {
-        // console.log(e.response)
+
       }
     }
   },
-  modules: {
-  }
+  modules: {}
 })
