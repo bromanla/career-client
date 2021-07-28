@@ -1,7 +1,7 @@
 <template>
   <el-card shadow="always" header="Авторизация" >
-    <el-form ref="form" :model="form" label-position="top" :rules="loginRules">
-      <el-form-item label="Логин" prop="login">
+    <el-form ref="form" :model="form" label-position="top" :rules="loginRules" @keypress.enter="onSubmit">
+      <el-form-item label="Логин" prop="login" :error="loginError">
         <el-input v-model="form.login" suffix-icon="el-icon-user"></el-input>
       </el-form-item>
 
@@ -32,25 +32,30 @@ export default {
         password: [
           { required: true, message: 'Поле не может быть пустым', trigger: 'change' }
         ]
-      }
+      },
+      loginError: ''
     }
   },
   methods: {
     onSubmit() {
       this.$refs['form'].validate(async (valid) => {
         if (valid) {
-          // Query
+          try {
+            await this.$store.dispatch('fetchLogin', this.form)
+            console.log('Success login')
+
+            this.$router.push({path: '/'})
+          } catch (err) {
+            this.loginError = err.message
+
+            // Hack
+            setTimeout(() => this.loginError = '', 3000)
+          }
         } else {
           return false;
         }
       })
     }
-  },
-  async mounted() {
-    await this.$store.dispatch('fetchLogin', {
-      login: 'Vova',
-      password: '4321'
-    })
   }
 }
 </script>
