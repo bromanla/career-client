@@ -12,8 +12,15 @@
   export default {
     components: {
       LoginCard
+    },
+    mounted() {
+      if (this.$route.params.message) {
+        this.$notify.error({
+          title: 'Ошибка',
+          message: this.$route.params.message
+        });
+      }
     }
-
   }
 </script>
 

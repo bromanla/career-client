@@ -1,11 +1,53 @@
 import axios from 'axios'
 import config from '@/config.js'
+import store from '@/store/index.js'
+import router from '@/router/index.js'
+import jwt from 'jsonwebtoken'
 
 const api = axios.create({
   baseURL: config.api,
   timeout: 1000
 })
 
+// Перехватчик запроса
+api.interceptors.request.use(async (urlConfig) => {
+  const { refresh, expiredAt } = store.getters.axios
+
+  // Проверям токен на свежесть
+  if (expiredAt) {
+    if (Number(expiredAt) <= ~~(Date.now()/1000)) {
+      console.log('Update token')
+
+      try {
+        const { data } = await axios.post(`${config.api}/auth/refresh`, { refresh })
+        const { exp } = jwt.decode(data.access);
+
+        store.commit('setTokens', { ...data, exp })
+        store.dispatch('setLocalStorage', { ...data, exp })
+      } catch {
+        // Жесткий сброс
+        console.error('Hard reset')
+
+        localStorage.clear()
+        store.commit('setTokens', { access: '', refresh: '', exp: '' })
+        router.push({
+          name: 'login',
+          params: {
+            message: 'Ошибка авторизации'
+          }
+        })
+      }
+    }
+  }
+
+  // Добавляем jwt в заголовки
+  const { access } = store.getters.axios
+  urlConfig.headers.Authorization = `Bearer ${access}`
+
+  return urlConfig
+})
+
+// Перехватчик ответа
 api.interceptors.response.use(
   (response) => {
     return response.data;

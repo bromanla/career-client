@@ -1,6 +1,7 @@
 <template>
   <el-main>
       <el-skeleton />
+      Классы
     </el-main>
 </template>
 
@@ -11,12 +12,5 @@ export default {
 </script>
 
 <style scoped>
-  .el-aside {
-    color: #333;
-    min-height: 100vh;
-  }
 
-  .el-menu-item {
-    text-align: left;
-  }
 </style>

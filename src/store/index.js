@@ -6,24 +6,28 @@ export default createStore({
   state: {
     access: localStorage.getItem('access') || '',
     refresh: localStorage.getItem('refresh') || '',
-    role: localStorage.getItem('role') || '',
     expiredAt: localStorage.getItem('expiredAt') || ''
   },
   getters: {
+    axios (state) {
+      return {
+        access: state.access,
+        refresh: state.refresh,
+        expiredAt: state.expiredAt
+      }
+    }
   },
   mutations: {
-    setTokens (state, { access, refresh, exp, role}) {
+    setTokens (state, { access, refresh, exp }) {
       state.access = access
       state.refresh = refresh
-      state.role = role
       state.expiredAt = exp
     },
   },
   actions: {
-    async setLocalStorage (ctx , { access, refresh, exp, role }) {
+    async setLocalStorage (ctx , { access, refresh, exp }) {
       localStorage.setItem('access', access)
       localStorage.setItem('refresh', refresh)
-      localStorage.setItem('role', role)
       localStorage.setItem('expiredAt', exp)
     },
     async fetchLogin({ commit, dispatch }, { login, password }) {
@@ -32,7 +36,7 @@ export default createStore({
         const { access, refresh } = await api.post('/auth/login', { login, password })
 
         // Разбираем jwt
-        const { exp, role } = await jwt.decode(access);
+        const { exp, role } = jwt.decode(access);
 
         // Выходим на сервере и посылаем ошибку валидации клиенту
         if (role === 'student') {
@@ -41,12 +45,25 @@ export default createStore({
         }
 
         // Устанавливаем locastorage и state
-        dispatch('setLocalStorage', { access, refresh, exp, role })
-        commit('setTokens', { access, refresh, exp, role })
+        dispatch('setLocalStorage', { access, refresh, exp })
+        commit('setTokens', { access, refresh, exp })
       } catch (error) {
         // Проксируем ошибку запроса клиенту
         throw error
       }
+    },
+    async logout({ commit, state }) {
+      // Чистим localStorage
+      localStorage.clear()
+      // Выходим на сервере
+      await api.post('/auth/logout', { refresh: state.refresh })
+      // Чистим vuex
+      commit('setTokens', { access: '', refresh: '', exp: '' })
+    },
+    async fetchUsers() {
+      const data = await api.get('/users')
+
+      console.log(data)
     }
   },
   modules: {}

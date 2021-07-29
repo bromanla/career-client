@@ -8,6 +8,7 @@ import api from '@/api/instance.js'
 export default {
   async mounted() {
     try {
+      // После загрузки приложения отправляем тестовый запрос на сервер для проверки его работоспособноти
       await api.get('/health')
       console.info('Server available')
     } catch {

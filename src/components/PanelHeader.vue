@@ -11,9 +11,7 @@
           </el-button>
           <template #dropdown>
             <el-dropdown-menu>
-               <router-link to="/login">
-                <el-dropdown-item>Выйти</el-dropdown-item>
-              </router-link>
+              <el-dropdown-item @click="logout">Выйти</el-dropdown-item>
             </el-dropdown-menu>
           </template>
         </el-dropdown>
@@ -24,7 +22,15 @@
 
 <script>
 export default {
-  name: 'panel-header'
+  name: 'panel-header',
+  methods: {
+    logout() {
+      // Вызываем action выхода vuex
+      this.$store.dispatch('logout')
+      // Перенаправляем на страницу логина
+      this.$router.push({ name: 'login' })
+    }
+  }
 }
 </script>
 
