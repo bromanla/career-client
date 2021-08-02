@@ -3,7 +3,9 @@
 
   <el-container>
     <table-menu></table-menu>
-    <router-view></router-view>
+    <el-container direction="vertical">
+      <router-view></router-view>
+    </el-container>
   </el-container>
 </template>
 

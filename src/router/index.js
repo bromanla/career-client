@@ -13,24 +13,29 @@ const routes = [
     component: Layout,
     children: [
       {
-        path: '/',
-        component: UsersContent
+        path: '',
+        redirect: '/users'
       },
       {
         path: '/users',
-        component: UsersContent
+        component: UsersContent,
+        name: 'users',
+        default: true
       },
       {
         path: '/schools',
-        component: SchoolsContent
+        component: SchoolsContent,
+        name: 'schools'
       },
       {
         path: '/classrooms',
-        component: ClassroomsContent
+        component: ClassroomsContent,
+        name: 'classrooms'
       },
       {
         path: '/exercises',
-        component: ExercisesContent
+        component: ExercisesContent,
+        name: 'exercises'
       }
     ],
     beforeEnter: (to, from, next) => {

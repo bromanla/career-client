@@ -1,19 +1,19 @@
 <template>
   <el-aside width="200px">
-    <el-menu router="true" :default-active="1">
-      <el-menu-item index="1" route="/users">
+    <el-menu :default-active="$route.name" :router="true">
+      <el-menu-item index="users" route="/users">
         <i class="el-icon-user"></i>
         <span>Пользователи</span>
       </el-menu-item>
-      <el-menu-item index="2" route="/classrooms">
+      <el-menu-item index="classrooms" route="/classrooms">
         <i class="el-icon-folder"></i>
         <span>Классы</span>
       </el-menu-item>
-      <el-menu-item index="3" route="/schools">
+      <el-menu-item index="schools" route="/schools">
         <i class="el-icon-school"></i>
         <span>Школы</span>
       </el-menu-item>
-      <el-menu-item index="4" route="/exercises">
+      <el-menu-item index="exercises" route="/exercises">
         <i class="el-icon-document"></i>
         <span>Упражнения</span>
       </el-menu-item>

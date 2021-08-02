@@ -1,65 +1,63 @@
 <template>
   <el-table
     :data="tableData"
+    v-loading="loading"
     style="width: 100%"
     border
   >
     <el-table-column
-      prop="date"
+      prop="id"
       label="Id"
-      width="180">
+      width="100">
     </el-table-column>
     <el-table-column
-      prop="name"
+      prop="login"
       label="Login"
       width="180">
     </el-table-column>
     <el-table-column
-      prop="address"
+      prop="role"
       label="Role">
     </el-table-column>
+    <el-table-column
+      fixed="right"
+      label="Operations">
+      <table-operations></table-operations>
+    </el-table-column>
   </el-table>
+
+  <!-- <el-pagination
+    layout="prev, pager, next"
+    :page-size="100"
+    :total="1000">
+  </el-pagination> -->
+
+  <fixed-add-button @action="addUser"></fixed-add-button>
 </template>
 
 <script>
+  import TableOperations from '@/components/TableOperations.vue'
+  import FixedAddButton from '@/components/FixedAddButton.vue'
+
   export default {
     name: 'table-content',
+    components: { TableOperations, FixedAddButton },
     data() {
       return {
-        tableData: [{
-          date: '2016-05-03',
-          name: 'Tom',
-          address: 'No. 189, Grove St, Los Angeles'
-        }, {
-          date: '2016-05-02',
-          name: 'Tom',
-          address: 'No. 189, Grove St, Los Angeles'
-        }, {
-          date: '2016-05-04',
-          name: 'Tom',
-          address: 'No. 189, Grove St, Los Angeles'
-        }, {
-          date: '2016-05-01',
-          name: 'Tom',
-          address: 'No. 189, Grove St, Los Angeles'
-        }, {
-          date: '2016-05-08',
-          name: 'Tom',
-          address: 'No. 189, Grove St, Los Angeles'
-        }, {
-          date: '2016-05-06',
-          name: 'Tom',
-          address: 'No. 189, Grove St, Los Angeles'
-        }, {
-          date: '2016-05-07',
-          name: 'Tom',
-          address: 'No. 189, Grove St, Los Angeles'
-        }],
+        tableData: [],
+        loading: true
+      }
+    },
+    methods: {
+      addUser: function() {
+        console.log('Add users')
       }
     },
     async mounted() {
-      const foo = await this.$store.dispatch('fetchUsers')
-      console.log(foo)
+      const { users } = await this.$store.dispatch('fetchUsers')
+
+      this.tableData = users
+      this.loading = false
     }
   }
 </script>

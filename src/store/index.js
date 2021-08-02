@@ -63,7 +63,22 @@ export default createStore({
     async fetchUsers() {
       const data = await api.get('/users')
 
-      console.log(data)
+      return data
+    },
+    async fetchClassrooms() {
+      const data = await api.get('/classrooms')
+
+      return data
+    },
+    async fetchSchools() {
+      const data = await api.get('/schools')
+
+      return data
+    },
+    async fetchExercises() {
+      const data = await api.get('/exercises')
+
+      return data
     }
   },
   modules: {}
