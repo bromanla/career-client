@@ -26,7 +26,7 @@ export default {
   methods: {
     logout() {
       // Вызываем action выхода vuex
-      this.$store.dispatch('logout')
+      this.$store.dispatch('auth/logout')
       // Перенаправляем на страницу логина
       this.$router.push({ name: 'login' })
     }

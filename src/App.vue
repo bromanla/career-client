@@ -3,7 +3,7 @@
 </template>
 
 <script>
-import api from '@/api/instance.js'
+import api from '@/api/index.js'
 
 export default {
   async mounted() {
@@ -16,6 +16,7 @@ export default {
         type: 'error'
       })
     }
+    // this.$store.dispatch('auth/fetchLogin')
   }
 }
 </script>

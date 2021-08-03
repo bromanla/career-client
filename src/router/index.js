@@ -1,6 +1,8 @@
 import { createRouter, createWebHistory } from 'vue-router'
 
-import Layout from '@/views/MainLayout.vue'
+import store from '@/store/index.js'
+
+import Main from '@/views/Main.vue'
 import UsersContent from '@/components/content/Users.vue'
 import ClassroomsContent from '@/components/content/Classrooms.vue'
 import SchoolsContent from '@/components/content/Schools.vue'
@@ -10,7 +12,7 @@ const routes = [
   {
     path: '/',
     name: 'main',
-    component: Layout,
+    component: Main,
     children: [
       {
         path: '',
@@ -39,10 +41,10 @@ const routes = [
       }
     ],
     beforeEnter: (to, from, next) => {
-      if (localStorage.getItem('access') && localStorage.getItem('refresh') && localStorage.getItem('expiredAt'))
+      if(store.getters['auth/isAuth'])
         next()
       else {
-        localStorage.clear()
+        store.dispatch('auth/logout')
 
         next({
           name: 'login',

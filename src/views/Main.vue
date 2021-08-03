@@ -2,7 +2,7 @@
   <panel-header></panel-header>
 
   <el-container>
-    <table-menu></table-menu>
+    <nav-menu></nav-menu>
     <el-container direction="vertical">
       <router-view></router-view>
     </el-container>
@@ -10,12 +10,12 @@
 </template>
 
 <script>
-  import TableMenu from '@/components/TableMenu.vue';
+  import NavMenu from '@/components/NavMenu.vue';
   import PanelHeader from '@/components/PanelHeader.vue';
 
   export default {
     components: {
-      TableMenu, PanelHeader
+      NavMenu, PanelHeader
     }
   }
 </script>

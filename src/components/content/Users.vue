@@ -1,19 +1,21 @@
 <template>
   <el-table
+    class="table"
     :data="tableData"
     v-loading="loading"
-    style="width: 100%"
     border
   >
     <el-table-column
       prop="id"
       label="Id"
-      width="100">
+      width="50"
+      align="center"
+    >
     </el-table-column>
     <el-table-column
       prop="login"
       label="Login"
-      width="180">
+    >
     </el-table-column>
     <el-table-column
       prop="role"
@@ -21,16 +23,29 @@
     </el-table-column>
     <el-table-column
       fixed="right"
-      label="Operations">
-      <table-operations></table-operations>
+      label="Operations"
+      width="160"
+      align="center"
+    >
+      <template #default="scope">
+        <table-operations
+          @show="showUser(scope.row)"
+          @edit="editUser(scope.row)"
+          @delete="deleteUser(scope.row)"
+        ></table-operations>
+      </template>
     </el-table-column>
   </el-table>
 
-  <!-- <el-pagination
+  <el-pagination
+    class="pagination"
     layout="prev, pager, next"
-    :page-size="100"
-    :total="1000">
-  </el-pagination> -->
+    :page-size="perPage"
+    :total="totalRows"
+    v-model:currentPage="currentPage"
+    @current-change="paginationChange"
+  >
+  </el-pagination>
 
   <fixed-add-button @action="addUser"></fixed-add-button>
 </template>
@@ -45,19 +60,52 @@
     data() {
       return {
         tableData: [],
-        loading: true
+        loading: true,
+        totalRows: 0,
+        perPage: 0,
+        currentPage: 1
       }
     },
     methods: {
       addUser: function() {
         console.log('Add users')
+      },
+      showUser: function(row) {
+        console.log(row)
+        console.log('Show user')
+      },
+      editUser: function() {
+        console.log('Edit user')
+      },
+      deleteUser: function() {
+        console.log('Delete User')
+      },
+      paginationChange: async function() {
+        this.loading = true
+        const { users, meta } = await this.$store.dispatch('users/fetchUsers', { page: this.currentPage })
+
+        // Данные пагинации
+        this.totalRows = meta.totalRows
+        this.perPage = meta.perPage
+
+        // Данные таблицы
+        this.tableData = users
+        this.loading = false
       }
     },
     async mounted() {
-      const { users } = await this.$store.dispatch('fetchUsers')
-
-      this.tableData = users
-      this.loading = false
+      await this.paginationChange()
     }
   }
 </script>
+
+<style scoped>
+  .table {
+    width: 100%;
+    margin-bottom: 1rem;
+  }
+
+  .pagination {
+    margin: auto auto 1rem auto
+  }
+</style>

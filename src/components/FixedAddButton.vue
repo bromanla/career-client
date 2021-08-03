@@ -1,6 +1,12 @@
 <template>
   <el-tooltip content="Добавить" placement="top">
-    <el-button @click="$emit('action')"  class="add-button" type="primary" icon="el-icon-plus" circle></el-button>
+    <el-button
+      @click="$emit('action')"
+      class="add-button"
+      type="primary"
+      icon="el-icon-plus"
+      circle
+    ></el-button>
   </el-tooltip>
 </template>
 

@@ -23,7 +23,7 @@
 
 <script>
 export default {
-  name: 'table-menu'
+  name: 'nav-menu'
 }
 </script>
 
