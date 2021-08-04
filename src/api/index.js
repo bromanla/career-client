@@ -2,6 +2,7 @@ import axios from 'axios'
 import config from '@/config.js'
 import store from '@/store/index.js'
 import router from '@/router/index.js'
+import subcodes from './subcodes.js'
 
 const api = axios.create({
   baseURL: config.api,
@@ -36,57 +37,34 @@ api.interceptors.response.use(
     return response.data;
   },
   (error) => {
-    let message
+    let message = 'Неизвестная ошибка'
 
-    // Есть тело ответа
     if (error.response) {
-      // Ошибка с subcode
-      if (error.response.status = 400) {
-        switch (error.response.data.subcode) {
-          case 10:
-            // JSON parse error
-            message = 'Ошибка при отправке данных'
-            break;
-          case 20:
-            // Wrong login or password
-            message = 'Неверный логин или пароль'
-            break;
-          case 21:
-            // Refresh token not found
-            message = 'Перезайдите в систему'
-            break;
-          case 30:
+      switch (error.response.status) {
+        case 400:
+          const subcode = error.response.data.subcode
 
-            break;
-          case 31:
-
-            break;
-          case 32:
-
-            break;
-          case 33:
-
-            break;
-          case 34:
-
-            break;
-          case 40:
-
-            break;
-          case 41:
-
-            break;
-          case 42:
-
-            break;
-          case 43:
-
-            break;
-          case 44:
-
-          default:
-            break;
-        }
+          if (subcodes.hasOwnProperty(subcode))
+            message = subcodes[subcode]
+          break
+        case 401:
+          message = 'Не удалось авторизоваться'
+          break
+        case 403:
+          message = 'Недостаточно прав'
+          break
+        case 422:
+          message = 'Не удалось разобрать данные'
+          break
+        case 429:
+          message = 'Слишком много запросов к серверу'
+          break
+        case 429:
+          message = 'Ошибка сервера'
+          break
+        default:
+          console.log(error.response)
+          break
       }
     }
 

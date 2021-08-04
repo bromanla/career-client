@@ -13,6 +13,7 @@
         icon="el-icon-edit"
         @click="$emit('edit')"></el-button>
     </el-tooltip>
+
     <el-tooltip content="Удалить" placement="top">
       <el-button
         size="mini"

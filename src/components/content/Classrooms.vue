@@ -29,9 +29,9 @@
     >
       <template #default="scope">
         <table-operations
-          @show="showUser(scope.row)"
-          @edit="editUser(scope.row)"
-          @delete="deleteUser(scope.row)"
+          @show="showClassroom(scope.row)"
+          @edit="editClassroom(scope.row)"
+          @delete="deleteClassroom(scope.row)"
         ></table-operations>
       </template>
     </el-table-column>
@@ -47,7 +47,7 @@
   >
   </el-pagination>
 
-  <fixed-add-button @action="addUser"></fixed-add-button>
+  <fixed-add-button @action="addClassroom"></fixed-add-button>
 </template>
 
 <script>
@@ -67,18 +67,18 @@
       }
     },
     methods: {
-      addUser: function() {
-        console.log('Add users')
+      addClassroom: function() {
+        console.log('Add Classroom')
       },
-      showUser: function(row) {
+      showClassroom: function(row) {
         console.log(row)
-        console.log('Show user')
+        console.log('Show Classroom')
       },
-      editUser: function() {
-        console.log('Edit user')
+      editClassroom: function() {
+        console.log('Edit Classroom')
       },
-      deleteUser: function() {
-        console.log('Delete User')
+      deleteClassroom: function() {
+        console.log('Delete Classroom')
       },
       paginationChange: async function() {
         this.loading = true

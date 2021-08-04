@@ -63,7 +63,8 @@
         loading: true,
         totalRows: 0,
         perPage: 0,
-        currentPage: 1
+        currentPage: 1,
+        dialogVisible: false
       }
     },
     methods: {
@@ -77,20 +78,43 @@
       editUser: function() {
         console.log('Edit user')
       },
-      deleteUser: function() {
-        console.log('Delete User')
+      deleteUser: async function(row) {
+        const { id } = row
+
+        try {
+          await this.$confirm(`Удалить запись?`, {
+            confirmButtonText: 'Да',
+            cancelButtonText: 'Нет',
+            type: 'warning'
+          })
+
+          await this.$store.dispatch('users/delete', { id })
+
+          await this.paginationChange()
+
+          this.$message({ type: 'success', message: 'Запись удалена' })
+        } catch (e) {
+          if (e === 'cancel')
+            this.$message({ type: 'info', message: 'Удаление отменено' })
+          else
+            this.$notify.error({ title: 'Ошибка', message: e.message })
+        }
       },
       paginationChange: async function() {
-        this.loading = true
-        const { users, meta } = await this.$store.dispatch('users/fetchUsers', { page: this.currentPage })
+        try {
+          this.loading = true
+          const { users, meta } = await this.$store.dispatch('users/all', { page: this.currentPage })
 
-        // Данные пагинации
-        this.totalRows = meta.totalRows
-        this.perPage = meta.perPage
+          // Данные пагинации
+          this.totalRows = meta.totalRows
+          this.perPage = meta.perPage
 
-        // Данные таблицы
-        this.tableData = users
-        this.loading = false
+          // Данные таблицы
+          this.tableData = users
+          this.loading = false
+        } catch ({message}) {
+          this.$notify.error({ title: 'Ошибка', message })
+        }
       }
     },
     async mounted() {

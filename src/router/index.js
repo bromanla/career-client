@@ -7,6 +7,7 @@ import UsersContent from '@/components/content/Users.vue'
 import ClassroomsContent from '@/components/content/Classrooms.vue'
 import SchoolsContent from '@/components/content/Schools.vue'
 import ExercisesContent from '@/components/content/Exercises.vue'
+import NotFound from '@/components/content/NotFound.vue'
 
 const routes = [
   {
@@ -15,7 +16,7 @@ const routes = [
     component: Main,
     children: [
       {
-        path: '',
+        path: '/',
         redirect: '/users'
       },
       {
@@ -59,6 +60,20 @@ const routes = [
     path: '/login',
     name: 'login',
     component: () => import('@/views/Login.vue')
+  },
+  {
+    path: '/404',
+    component: Main,
+    children: [
+      {
+        path: '',
+        component: NotFound
+      }
+    ]
+  },
+  {
+    path: '/:pathMatch(.*)*',
+    redirect: '/404'
   }
 ]
 

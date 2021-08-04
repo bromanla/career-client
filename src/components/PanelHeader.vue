@@ -5,6 +5,7 @@
         <span>Career Guidance</span>
       </el-col>
       <el-col class="menu" :span="12">
+        <span class="username">{{ $store.getters['auth/login'] }}</span>
         <el-dropdown>
           <el-button type="danger">
             <i class="el-icon-user-solid"></i>
@@ -21,17 +22,15 @@
 </template>
 
 <script>
-export default {
-  name: 'panel-header',
-  methods: {
-    logout() {
-      // Вызываем action выхода vuex
-      this.$store.dispatch('auth/logout')
-      // Перенаправляем на страницу логина
-      this.$router.push({ name: 'login' })
+  export default {
+    name: 'panel-header',
+    methods: {
+      logout() {
+        this.$store.dispatch('auth/logout')
+        this.$router.push({ name: 'login' })
+      }
     }
   }
-}
 </script>
 
 <style scoped>
@@ -56,6 +55,10 @@ export default {
 
   .menu {
     text-align: right;
+  }
+
+  .username {
+    margin-right: 1rem;
   }
 
   .el-dropdown-menu a {

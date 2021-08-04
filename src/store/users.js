@@ -6,12 +6,21 @@ export default {
   getters: {},
   mutations: {},
   actions: {
-    async fetchUsers(ctx, { page }) {
-      const data = await api.get('/users', {
-        params: { page }
-      })
-
-      return data
+    async all(_, { page }) {
+      try {
+        return await api.get('/users', {
+          params: { page }
+        })
+      } catch (err) {
+        throw err
+      }
     },
+    async delete(_, { id }) {
+      try {
+        return await api.delete(`/users/${id}`)
+      } catch (err) {
+        throw err
+      }
+    }
   }
 }

@@ -23,6 +23,9 @@ export default {
     },
     refresh(state) {
       return state.refresh
+    },
+    login(state) {
+      return state.login
     }
   },
   mutations: {
