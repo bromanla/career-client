@@ -57,7 +57,7 @@ export default {
             await this.$store.dispatch('auth/fetchLogin', this.form)
             console.log('Success login')
 
-            this.$router.push({name: 'users'})
+            this.$router.push('/users')
           } catch (err) {
             this.loginError = err.message
 

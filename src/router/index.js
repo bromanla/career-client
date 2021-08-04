@@ -3,11 +3,18 @@ import { createRouter, createWebHistory } from 'vue-router'
 import store from '@/store/index.js'
 
 import Main from '@/views/Main.vue'
+
+import UsersTable from '@/components/tables/Users.vue'
+import ClassroomsTable from '@/components/tables/Classrooms.vue'
+import SchoolsTable from '@/components/tables/Schools.vue'
+import ExercisesTable from '@/components/tables/Exercises.vue'
+
 import UsersContent from '@/components/content/Users.vue'
-import ClassroomsContent from '@/components/content/Classrooms.vue'
-import SchoolsContent from '@/components/content/Schools.vue'
-import ExercisesContent from '@/components/content/Exercises.vue'
-import NotFound from '@/components/content/NotFound.vue'
+// import ClassroomsContent from '@/components/content/Classrooms.vue'
+// import SchoolsContent from '@/components/content/Schools.vue'
+// import ExercisesContent from '@/components/content/Exercises.vue'
+
+import NotFound from '@/components/NotFound.vue'
 
 const routes = [
   {
@@ -21,24 +28,33 @@ const routes = [
       },
       {
         path: '/users',
+        component: UsersTable,
+        name: 'usersTable',
+        meta: { nav: 'users' }
+      },
+      {
+        path: '/users/:id',
         component: UsersContent,
-        name: 'users',
-        default: true
+        name: 'usersContent',
+        meta: { nav: 'users' }
       },
       {
         path: '/schools',
-        component: SchoolsContent,
-        name: 'schools'
+        component: SchoolsTable,
+        name: 'schoolsTable',
+        meta: { nav: 'schools' }
       },
       {
         path: '/classrooms',
-        component: ClassroomsContent,
-        name: 'classrooms'
+        component: ClassroomsTable,
+        name: 'classroomsTable',
+        meta: { nav: 'classrooms' }
       },
       {
         path: '/exercises',
-        component: ExercisesContent,
-        name: 'exercises'
+        component: ExercisesTable,
+        name: 'exercisesTable',
+        meta: { nav: 'exercises' }
       }
     ],
     beforeEnter: (to, from, next) => {

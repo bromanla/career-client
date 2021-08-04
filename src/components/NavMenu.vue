@@ -1,6 +1,6 @@
 <template>
   <el-aside width="200px">
-    <el-menu :default-active="$route.name" :router="true">
+    <el-menu :default-active="$route.meta.nav" :router="true">
       <el-menu-item index="users" route="/users">
         <i class="el-icon-user"></i>
         <span>Пользователи</span>
