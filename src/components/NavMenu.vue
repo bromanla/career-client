@@ -28,6 +28,10 @@ export default {
 </script>
 
 <style scoped>
+  .el-menu {
+    border: 0;
+  }
+
   .el-aside {
     color: #333;
     background: #fff;

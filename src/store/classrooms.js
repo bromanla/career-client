@@ -13,5 +13,26 @@ export default {
 
       return data
     },
+    async byId (_, { id }) {
+      try {
+        return await api.get(`/classrooms/${id}`)
+      } catch (err) {
+        throw err
+      }
+    },
+    async patch (_, { id, body }) {
+      try {
+        return await api.patch(`/classrooms/${id}`, body)
+      } catch (err) {
+        throw err
+      }
+    },
+    async delete(_, { id }) {
+      try {
+        return await api.delete(`/classrooms/${id}`)
+      } catch (err) {
+        throw err
+      }
+    }
   }
 }

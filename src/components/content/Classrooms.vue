@@ -1,28 +1,22 @@
 <template>
-  <el-card header="Пользователь" shadow="newer" v-loading="isLoading">
+  <el-card header="Классы" shadow="newer" v-loading="isLoading">
     <el-form
       ref="form"
-      label-width="110px"
+      label-width="80px"
       :model="formData"
       :rules="formRules"
     >
       <el-form-item label="Id">
         <el-input v-model="formData.id" :disabled="true"></el-input>
       </el-form-item>
-      <el-form-item prop="login" label="Name" >
-         <el-input v-model="formData.login" :disabled="!isEdit"></el-input>
+      <el-form-item prop="className" label="Name" >
+        <el-input v-model="formData.className" :disabled="!isEdit"></el-input>
       </el-form-item>
-      <el-form-item  prop="role" label="Role">
-        <el-select v-model="formData.role" :disabled="!isEdit">
-          <el-option label="Student" value="student"></el-option>
-          <el-option label="Admin" value="admin"></el-option>
-        </el-select>
+      <el-form-item prop="schoolId" label="School Id" >
+        <el-input v-model.number="formData.schoolId" :disabled="!isEdit"></el-input>
       </el-form-item>
-      <el-form-item prop="classroomId" label="Classroom Id" v-if="formData.role === 'student'">
-        <el-input v-model.number="formData.classroomId" :disabled="!isEdit"></el-input>
-      </el-form-item>
-      <el-form-item prop="className" label="Classroom">
-        <el-input v-model.number="formData.className" disabled></el-input>
+      <el-form-item prop="schoolName" label="School" >
+        <el-input v-model="formData.schoolName" disabled></el-input>
       </el-form-item>
       <el-form-item align="right">
         <el-button v-if="!isEdit" @click="isEdit = true">Редактировать</el-button>
@@ -33,6 +27,31 @@
       </el-form-item>
     </el-form>
   </el-card>
+
+  <el-card header="Ученики" shadow="newer" v-if="isExtra">
+    <el-table
+      stripe
+      border
+      :data="extraData"
+    >
+      <el-table-column prop="id" label="Id" width="50" align="center"></el-table-column>
+      <el-table-column prop="login" label="login"></el-table-column>
+      <el-table-column
+        fixed="right"
+        label="Operations"
+        width="160"
+        align="center"
+      >
+        <template #default="scope">
+          <el-button
+            size="mini"
+            icon="el-icon-zoom-in"
+            @click="showUser(scope.row)">
+          </el-button>
+        </template>
+      </el-table-column>
+    </el-table>
+  </el-card>
 </template>
 
 <script>
@@ -41,14 +60,15 @@
       return {
         isLoading: true,
         isEdit: false,
+        isExtra: false,
         formData: {},
         formDataCopy: {},
+        extraData: [],
         formRules: {
-          login: [{ required: true, message: 'Поле не может быть пустым' }],
-          role: [{ required: true, message: 'Поле не может быть пустым' }],
-          classroomId: [
+          className: [{ required: true, message: 'Поле не может быть пустым'}],
+          schoolId: [
             { type: 'number', message: 'Поле должно быть числом' },
-            { required: true, message: 'Поле не может быть пустым' }
+            { required: true, message: 'Поле не может быть пустым'}
           ]
         }
       }
@@ -62,17 +82,11 @@
         this.$refs['form'].validate(async (valid) => {
           if (valid) {
             try {
-              const { id, login, role, classroomId } = this.formData
+              const { id, className, schoolId } = this.formData
 
-              const body = { login, role }
+              const response = await this.$store.dispatch('classrooms/patch', { id, body: { className, schoolId }} )
 
-              if (role === 'student')
-                body.classroomId = classroomId
-
-              const response = await this.$store.dispatch('users/patch', { id, body } )
-
-              this.formData.className = response.classroom?.className
-
+              this.formData.schoolName = response.school.name
               this.formDataCopy = { ...this.formData }
               this.$message({ type: 'success', message: 'Запись Изменена' })
               this.isEdit = false
@@ -84,6 +98,10 @@
             return false;
           }
         })
+      },
+      showUser (row) {
+        const { id } = row
+        this.$router.push(`/users/${id}`)
       }
     },
     async mounted() {
@@ -91,18 +109,22 @@
         this.isLoading = true
         const id = this.$route.params.id
 
-        const data = await this.$store.dispatch('users/byId', { id })
+        const { users, ...data } = await this.$store.dispatch('classrooms/byId', { id })
 
         const formData = {
           id: data.id,
-          login: data.login,
-          role: data.role,
-          classroomId: data.classroom?.id,
-          className: data.classroom?.className
+          className: data.className,
+          schoolId: data.school.id,
+          schoolName: data.school.name
         }
 
         this.formData = formData
         this.formDataCopy = { ...formData }
+
+        if (users.length) {
+          this.isExtra = true
+          this.extraData = users
+        }
 
         this.isLoading = false
 

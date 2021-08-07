@@ -10,8 +10,8 @@ import SchoolsTable from '@/components/tables/Schools.vue'
 import ExercisesTable from '@/components/tables/Exercises.vue'
 
 import UsersContent from '@/components/content/Users.vue'
-// import ClassroomsContent from '@/components/content/Classrooms.vue'
-// import SchoolsContent from '@/components/content/Schools.vue'
+import ClassroomsContent from '@/components/content/Classrooms.vue'
+import SchoolsContent from '@/components/content/Schools.vue'
 // import ExercisesContent from '@/components/content/Exercises.vue'
 
 import NotFound from '@/components/NotFound.vue'
@@ -45,9 +45,21 @@ const routes = [
         meta: { nav: 'schools' }
       },
       {
+        path: '/schools/:id',
+        component: SchoolsContent,
+        name: 'schoolsContent',
+        meta: { nav: 'schools' }
+      },
+      {
         path: '/classrooms',
         component: ClassroomsTable,
         name: 'classroomsTable',
+        meta: { nav: 'classrooms' }
+      },
+      {
+        path: '/classrooms/:id',
+        component: ClassroomsContent,
+        name: 'classroomsContent',
         meta: { nav: 'classrooms' }
       },
       {

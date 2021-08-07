@@ -4,6 +4,7 @@
     :data="tableData"
     v-loading="loading"
     border
+    empty-text="Загрузка"
   >
     <el-table-column
       prop="id"
@@ -75,8 +76,9 @@
         const { id } = row
         this.$router.push(`/users/${id}`)
       },
-      editUser: function() {
-        console.log('Edit user')
+      editUser: function(row) {
+        const { id } = row
+        this.$router.push(`/users/${id}?edit`)
       },
       deleteUser: async function(row) {
         const { id } = row

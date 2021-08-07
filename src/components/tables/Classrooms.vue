@@ -4,6 +4,7 @@
     :data="tableData"
     v-loading="loading"
     border
+    empty-text="Загрузка"
   >
     <el-table-column
       prop="id"
@@ -71,14 +72,34 @@
         console.log('Add Classroom')
       },
       showClassroom: function(row) {
-        console.log(row)
-        console.log('Show Classroom')
+        const { id } = row
+        this.$router.push(`/classrooms/${id}`)
       },
-      editClassroom: function() {
-        console.log('Edit Classroom')
+      editClassroom: function(row) {
+        const { id } = row
+        this.$router.push(`/classrooms/${id}?edit`)
       },
-      deleteClassroom: function() {
-        console.log('Delete Classroom')
+      deleteClassroom: async function(row) {
+        const { id } = row
+
+        try {
+          await this.$confirm(`Удалить запись?`, {
+            confirmButtonText: 'Да',
+            cancelButtonText: 'Нет',
+            type: 'warning'
+          })
+
+          await this.$store.dispatch('classrooms/delete', { id })
+
+          await this.paginationChange()
+
+          this.$message({ type: 'success', message: 'Запись удалена' })
+        } catch (e) {
+          if (e === 'cancel')
+            this.$message({ type: 'info', message: 'Удаление отменено' })
+          else
+            this.$notify.error({ title: 'Ошибка', message: e.message })
+        }
       },
       paginationChange: async function() {
         this.loading = true

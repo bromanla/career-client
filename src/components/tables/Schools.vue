@@ -4,6 +4,7 @@
     :data="tableData"
     v-loading="loading"
     border
+    empty-text="Загрузка"
   >
     <el-table-column
       prop="id"
@@ -67,26 +68,50 @@
         console.log('Add School')
       },
       showSchool: function(row) {
-        console.log(row)
-        console.log('Show School')
+        const { id } = row
+        this.$router.push(`/schools/${id}`)
       },
-      editSchool: function() {
-        console.log('Edit School')
+      editSchool: function(row) {
+        const { id } = row
+        this.$router.push(`/schools/${id}?edit`)
       },
-      deleteSchool: function() {
-        console.log('Delete School')
+      deleteSchool: async function(row) {
+        const { id } = row
+
+        try {
+          await this.$confirm(`Удалить запись?`, {
+            confirmButtonText: 'Да',
+            cancelButtonText: 'Нет',
+            type: 'warning'
+          })
+
+          await this.$store.dispatch('schools/delete', { id })
+
+          await this.paginationChange()
+
+          this.$message({ type: 'success', message: 'Запись удалена' })
+        } catch (e) {
+          if (e === 'cancel')
+            this.$message({ type: 'info', message: 'Удаление отменено' })
+          else
+            this.$notify.error({ title: 'Ошибка', message: e.message })
+        }
       },
       paginationChange: async function() {
-        this.loading = true
-        const { schools, meta } = await this.$store.dispatch('schools/fetchSchools', { page: this.currentPage })
+        try {
+          this.loading = true
+          const { schools, meta } = await this.$store.dispatch('schools/fetchSchools', { page: this.currentPage })
 
-        // Данные пагинации
-        this.totalRows = meta.totalRows
-        this.perPage = meta.perPage
+          // Данные пагинации
+          this.totalRows = meta.totalRows
+          this.perPage = meta.perPage
 
-        // Данные таблицы
-        this.tableData = schools
-        this.loading = false
+          // Данные таблицы
+          this.tableData = schools
+          this.loading = false
+        } catch ({message}) {
+          this.$notify.error({ title: 'Ошибка', message })
+        }
       }
     },
     async mounted() {

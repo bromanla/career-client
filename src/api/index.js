@@ -6,7 +6,7 @@ import subcodes from './subcodes.js'
 
 const api = axios.create({
   baseURL: config.api,
-  timeout: 1000
+  timeout: 3000
 })
 
 // Перехватчик запроса
@@ -66,6 +66,8 @@ api.interceptors.response.use(
           console.log(error.response)
           break
       }
+    } else {
+      console.log(error)
     }
 
     throw { message }

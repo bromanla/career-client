@@ -4,6 +4,7 @@
     :data="tableData"
     v-loading="loading"
     border
+    empty-text="Загрузка"
   >
     <el-table-column
       prop="id"

@@ -1,28 +1,16 @@
 <template>
-  <el-card header="Пользователь" shadow="newer" v-loading="isLoading">
+  <el-card header="Школа" shadow="newer" v-loading="isLoading">
     <el-form
       ref="form"
-      label-width="110px"
+      label-width="50px"
       :model="formData"
       :rules="formRules"
     >
       <el-form-item label="Id">
         <el-input v-model="formData.id" :disabled="true"></el-input>
       </el-form-item>
-      <el-form-item prop="login" label="Name" >
-         <el-input v-model="formData.login" :disabled="!isEdit"></el-input>
-      </el-form-item>
-      <el-form-item  prop="role" label="Role">
-        <el-select v-model="formData.role" :disabled="!isEdit">
-          <el-option label="Student" value="student"></el-option>
-          <el-option label="Admin" value="admin"></el-option>
-        </el-select>
-      </el-form-item>
-      <el-form-item prop="classroomId" label="Classroom Id" v-if="formData.role === 'student'">
-        <el-input v-model.number="formData.classroomId" :disabled="!isEdit"></el-input>
-      </el-form-item>
-      <el-form-item prop="className" label="Classroom">
-        <el-input v-model.number="formData.className" disabled></el-input>
+      <el-form-item prop="name" label="Name" >
+         <el-input v-model="formData.name" :disabled="!isEdit"></el-input>
       </el-form-item>
       <el-form-item align="right">
         <el-button v-if="!isEdit" @click="isEdit = true">Редактировать</el-button>
@@ -33,6 +21,31 @@
       </el-form-item>
     </el-form>
   </el-card>
+
+  <el-card header="Классы" shadow="newer" v-if="isExtra">
+    <el-table
+      stripe
+      border
+      :data="extraData"
+    >
+      <el-table-column prop="id" label="Id" width="50" align="center"></el-table-column>
+      <el-table-column prop="className" label="Name"></el-table-column>
+      <el-table-column
+        fixed="right"
+        label="Operations"
+        width="160"
+        align="center"
+      >
+        <template #default="scope">
+          <el-button
+            size="mini"
+            icon="el-icon-zoom-in"
+            @click="showClassroom(scope.row)">
+          </el-button>
+        </template>
+      </el-table-column>
+    </el-table>
+  </el-card>
 </template>
 
 <script>
@@ -41,15 +54,12 @@
       return {
         isLoading: true,
         isEdit: false,
+        isExtra: false,
         formData: {},
         formDataCopy: {},
+        extraData: [],
         formRules: {
-          login: [{ required: true, message: 'Поле не может быть пустым' }],
-          role: [{ required: true, message: 'Поле не может быть пустым' }],
-          classroomId: [
-            { type: 'number', message: 'Поле должно быть числом' },
-            { required: true, message: 'Поле не может быть пустым' }
-          ]
+          name: [{ required: true, message: 'Поле не может быть пустым', trigger: 'change' }]
         }
       }
     },
@@ -62,16 +72,8 @@
         this.$refs['form'].validate(async (valid) => {
           if (valid) {
             try {
-              const { id, login, role, classroomId } = this.formData
-
-              const body = { login, role }
-
-              if (role === 'student')
-                body.classroomId = classroomId
-
-              const response = await this.$store.dispatch('users/patch', { id, body } )
-
-              this.formData.className = response.classroom?.className
+              const { id, ...body } = this.formData
+              await this.$store.dispatch('schools/patch', { id, body })
 
               this.formDataCopy = { ...this.formData }
               this.$message({ type: 'success', message: 'Запись Изменена' })
@@ -84,6 +86,10 @@
             return false;
           }
         })
+      },
+      showClassroom (row) {
+        const { id } = row
+        this.$router.push(`/classrooms/${id}`)
       }
     },
     async mounted() {
@@ -91,18 +97,20 @@
         this.isLoading = true
         const id = this.$route.params.id
 
-        const data = await this.$store.dispatch('users/byId', { id })
+        const { classrooms, ...data } = await this.$store.dispatch('schools/byId', { id })
 
-        const formData = {
+        const formData= {
           id: data.id,
-          login: data.login,
-          role: data.role,
-          classroomId: data.classroom?.id,
-          className: data.classroom?.className
+          name: data.name
         }
 
         this.formData = formData
         this.formDataCopy = { ...formData }
+
+        if (classrooms.length) {
+          this.isExtra = true
+          this.extraData = classrooms
+        }
 
         this.isLoading = false
 
@@ -111,7 +119,6 @@
       } catch ({ message }) {
          this.$notify.error({ title: 'Ошибка', message })
       }
-
     }
   }
 </script>

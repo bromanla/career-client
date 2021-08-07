@@ -15,6 +15,20 @@ export default {
         throw err
       }
     },
+    async byId (_, { id }) {
+      try {
+        return await api.get(`/users/${id}`)
+      } catch (err) {
+        throw err
+      }
+    },
+    async patch (_, { id, body }) {
+      try {
+        return await api.patch(`/users/${id}`, body)
+      } catch (err) {
+        throw err
+      }
+    },
     async delete(_, { id }) {
       try {
         return await api.delete(`/users/${id}`)
