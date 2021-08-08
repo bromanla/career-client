@@ -4,7 +4,7 @@
     :data="tableData"
     v-loading="loading"
     border
-    empty-text="Загрузка"
+    empty-text="Нет данных"
   >
     <el-table-column
       prop="id"
@@ -44,7 +44,28 @@
   >
   </el-pagination>
 
-  <fixed-add-button @action="addSchool"></fixed-add-button>
+  <fixed-add-button @action="addVisible = true"></fixed-add-button>
+
+  <el-dialog
+    title="Добавление школы"
+    v-model="addVisible"
+    width="500px">
+    <el-form
+      @submit.prevent="addSchool"
+      ref="addForm"
+      :rules="addFormRules"
+      :model="addFormData">
+      <el-form-item prop="name" label="Name">
+        <el-input v-model="addFormData.name"></el-input>
+      </el-form-item>
+      <el-form-item align="right">
+        <div>
+          <el-button @click="addVisible = false">Отменить</el-button>
+          <el-button type="primary" @click="addSchool">Сохранить</el-button>
+        </div>
+      </el-form-item>
+    </el-form>
+  </el-dialog>
 </template>
 
 <script>
@@ -60,12 +81,31 @@
         loading: true,
         totalRows: 0,
         perPage: 0,
-        currentPage: 1
+        currentPage: 1,
+        addVisible: false,
+        addFormData: {},
+        addFormRules: {
+          name: [{ required: true, message: 'Поле не может быть пустым', trigger: 'submit' }]
+        }
       }
     },
     methods: {
       addSchool: function() {
-        console.log('Add School')
+        this.$refs['addForm'].validate(async (valid) => {
+          if (valid) {
+            try {
+              const body = { name: this.addFormData.name }
+
+              await this.$store.dispatch('schools/post', { body } )
+              await this.paginationChange()
+
+              this.addFormData = {}
+              this.addVisible = false
+            } catch ({message}) {
+              this.$notify.error({ title: 'Ошибка', message: message })
+            }
+          }
+        })
       },
       showSchool: function(row) {
         const { id } = row

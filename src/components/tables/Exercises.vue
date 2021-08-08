@@ -2,9 +2,9 @@
   <el-table
     class="table"
     :data="tableData"
-    v-loading="loading"
+    v-loading="isLoading"
     border
-    empty-text="Загрузка"
+    empty-text="Нет данных"
   >
     <el-table-column
       prop="id"
@@ -61,7 +61,7 @@
     data() {
       return {
         tableData: [],
-        loading: true,
+        isLoading: true,
         totalRows: 0,
         perPage: 0,
         currentPage: 1
@@ -69,20 +69,22 @@
     },
     methods: {
       addExercises: function() {
-        console.log('Add Exercises')
+        $this.$router.push('/exercises?add')
       },
       showExercises: function(row) {
-        console.log(row)
-        console.log('Show Exercises')
+        const { id } = row
+        this.$router.push(`/exercises/${id}`)
       },
-      editExercises: function() {
-        console.log('Edit Exercises')
+      editExercises: function(row) {
+        const { id } = row
+        this.$router.push(`/exercises/${id}?edit`)
       },
-      deleteExercises: function() {
-        console.log('Delete Exercises')
+      deleteExercises: function(row) {
+        const { id } = row
+        this.$router.push(`/exercises/${id}`)
       },
       paginationChange: async function() {
-        this.loading = true
+        this.isLoading = true
         const { exercises, meta } = await this.$store.dispatch('exercises/fetchExercises', { page: this.currentPage })
 
         // Данные пагинации
@@ -91,7 +93,7 @@
 
         // Данные таблицы
         this.tableData = exercises
-        this.loading = false
+        this.isLoading = false
       }
     },
     async mounted() {

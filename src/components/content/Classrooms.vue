@@ -114,8 +114,8 @@
         const formData = {
           id: data.id,
           className: data.className,
-          schoolId: data.school.id,
-          schoolName: data.school.name
+          schoolId: data.school?.id,
+          schoolName: data.school?.name
         }
 
         this.formData = formData

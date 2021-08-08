@@ -44,11 +44,35 @@
     :page-size="perPage"
     :total="totalRows"
     v-model:currentPage="currentPage"
-    @current-change="paginationChange"
-  >
+    @current-change="paginationChange">
   </el-pagination>
 
-  <fixed-add-button @action="addClassroom"></fixed-add-button>
+  <fixed-add-button @action="addVisible = true"></fixed-add-button>
+
+  <el-dialog
+    title="Добавление класса"
+    v-model="addVisible"
+    width="500px">
+    <el-form
+      @submit.prevent="addClassroom"
+      ref="addForm"
+      label-width="100px"
+      :rules="addFormRules"
+      :model="addFormData">
+      <el-form-item prop="className" label="Name">
+        <el-input v-model="addFormData.className"></el-input>
+      </el-form-item>
+      <el-form-item prop="schoolId" label="School Id">
+        <el-input v-model.number="addFormData.schoolId"></el-input>
+      </el-form-item>
+      <el-form-item align="right">
+        <div>
+          <el-button @click="addVisible = false">Отменить</el-button>
+          <el-button type="primary" @click="addClassroom">Сохранить</el-button>
+        </div>
+      </el-form-item>
+    </el-form>
+  </el-dialog>
 </template>
 
 <script>
@@ -64,12 +88,38 @@
         loading: true,
         totalRows: 0,
         perPage: 0,
-        currentPage: 1
+        currentPage: 1,
+        addVisible: false,
+        addFormData: {},
+        addFormRules: {
+          className: [{ required: true, message: 'Поле не может быть пустым', trigger: 'submit' }],
+          schoolId: [
+            { type: 'number', message: 'Поле должно быть числом', trigger: 'submit' },
+            { required: true, message: 'Поле не может быть пустым', trigger: 'submit' }
+          ]
+        }
       }
     },
     methods: {
       addClassroom: function() {
-        console.log('Add Classroom')
+        this.$refs['addForm'].validate(async (valid) => {
+          if (valid) {
+            try {
+              const body = {
+                className: this.addFormData.className,
+                schoolId: this.addFormData.schoolId
+              }
+
+              await this.$store.dispatch('classrooms/post', { body } )
+              await this.paginationChange()
+
+              this.addFormData = {}
+              this.addVisible = false
+            } catch ({message}) {
+              this.$notify.error({ title: 'Ошибка', message: message })
+            }
+          }
+        })
       },
       showClassroom: function(row) {
         const { id } = row

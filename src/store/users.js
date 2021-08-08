@@ -22,6 +22,13 @@ export default {
         throw err
       }
     },
+    async post (_, { body }) {
+      try {
+        return await api.post(`/users`, body)
+      } catch (err) {
+        throw err
+      }
+    },
     async patch (_, { id, body }) {
       try {
         return await api.patch(`/users/${id}`, body)

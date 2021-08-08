@@ -48,7 +48,40 @@
   >
   </el-pagination>
 
-  <fixed-add-button @action="addUser"></fixed-add-button>
+  <fixed-add-button @action="addVisible = true"></fixed-add-button>
+  <el-dialog
+    title="Добавление пользователя"
+    v-model="addVisible"
+    width="500px">
+    <el-form
+      @submit.prevent="addUser"
+      ref="addForm"
+      label-width="120px"
+      :rules="addFormRules"
+      :model="addFormData">
+      <el-form-item prop="login" label="Login">
+        <el-input v-model="addFormData.login"></el-input>
+      </el-form-item>
+      <el-form-item prop="password" label="Password">
+        <el-input v-model="addFormData.password" show-password></el-input>
+      </el-form-item>
+      <el-form-item prop="role" label="Role">
+        <el-select v-model="addFormData.role">
+          <el-option label="Student" value="student"></el-option>
+          <el-option label="Admin" value="admin"></el-option>
+        </el-select>
+      </el-form-item>
+      <el-form-item prop="classroomId" label="Classroom Id" v-if="addFormData.role === 'student'">
+        <el-input v-model.number="addFormData.classroomId"></el-input>
+      </el-form-item>
+      <el-form-item align="right">
+        <div>
+          <el-button @click="addVisible = false">Отменить</el-button>
+          <el-button type="primary" @click="addUser">Сохранить</el-button>
+        </div>
+      </el-form-item>
+    </el-form>
+  </el-dialog>
 </template>
 
 <script>
@@ -65,12 +98,43 @@
         totalRows: 0,
         perPage: 0,
         currentPage: 1,
-        dialogVisible: false
+        addVisible: false,
+        addFormData: {},
+        addFormRules: {
+          login: [{ required: true, message: 'Поле не может быть пустым', trigger: 'submit' }],
+          role: [{ required: true, message: 'Поле не может быть пустым', trigger: 'submit' }],
+          password: [{ required: true, message: 'Поле не может быть пустым', trigger: 'submit' }],
+          classroomId: [
+            { type: 'number', message: 'Поле должно быть числом', trigger: 'submit' },
+            { required: true, message: 'Поле не может быть пустым', trigger: 'submit' }
+          ]
+        }
       }
     },
     methods: {
-      addUser: function() {
-        console.log('Add users')
+      addUser: async function() {
+        this.$refs['addForm'].validate(async (valid) => {
+          if (valid) {
+            try {
+              const body = {
+                login: this.addFormData.login,
+                password: this.addFormData.password,
+                role: this.addFormData.role
+              }
+
+              if (this.addFormData.role === 'student')
+                body.classroomId = this.addFormData.classroomId
+
+              await this.$store.dispatch('users/post', { body } )
+              await this.paginationChange()
+
+              this.addFormData = {}
+              this.addVisible = false
+            } catch ({message}) {
+              this.$notify.error({ title: 'Ошибка', message: message })
+            }
+          }
+        })
       },
       showUser: function(row) {
         const { id } = row
@@ -91,7 +155,6 @@
           })
 
           await this.$store.dispatch('users/delete', { id })
-
           await this.paginationChange()
 
           this.$message({ type: 'success', message: 'Запись удалена' })

@@ -21,7 +21,7 @@
       <el-form-item prop="classroomId" label="Classroom Id" v-if="formData.role === 'student'">
         <el-input v-model.number="formData.classroomId" :disabled="!isEdit"></el-input>
       </el-form-item>
-      <el-form-item prop="className" label="Classroom">
+      <el-form-item prop="className" label="Classroom" v-if="formData.role === 'student'">
         <el-input v-model.number="formData.className" disabled></el-input>
       </el-form-item>
       <el-form-item align="right">
@@ -33,6 +33,35 @@
       </el-form-item>
     </el-form>
   </el-card>
+
+  <el-card header="Результаты" shadow="newer" v-if="isExtra">
+    <el-table
+      stripe
+      border
+      :data="extraData"
+    >
+      <el-table-column prop="id" label="Id" width="50" align="center"></el-table-column>
+      <el-table-column prop="man" label="Man"></el-table-column>
+      <el-table-column prop="nature" label="Nature"></el-table-column>
+      <el-table-column prop="technics" label="Technics"></el-table-column>
+      <el-table-column prop="sign" label="Sign"></el-table-column>
+      <el-table-column prop="artistic" label="Artistic"></el-table-column>
+      <el-table-column
+        fixed="right"
+        label="Operations"
+        width="160"
+        align="center"
+      >
+        <template #default="scope">
+          <el-button
+            size="mini"
+            icon="el-icon-zoom-in"
+            @click="showExercisers(scope.row)">
+          </el-button>
+        </template>
+      </el-table-column>
+    </el-table>
+  </el-card>
 </template>
 
 <script>
@@ -41,8 +70,10 @@
       return {
         isLoading: true,
         isEdit: false,
+        isExtra: false,
         formData: {},
         formDataCopy: {},
+        extraData: [],
         formRules: {
           login: [{ required: true, message: 'Поле не может быть пустым' }],
           role: [{ required: true, message: 'Поле не может быть пустым' }],
@@ -84,6 +115,10 @@
             return false;
           }
         })
+      },
+      showExercisers: function (row) {
+        const { exerciseId } = row
+        this.$router.push(`/exercises/${exerciseId}`)
       }
     },
     async mounted() {
@@ -103,6 +138,11 @@
 
         this.formData = formData
         this.formDataCopy = { ...formData }
+
+        if (data.results.length && data.role === 'student') {
+          this.isExtra = true
+          this.extraData = data.results
+        }
 
         this.isLoading = false
 

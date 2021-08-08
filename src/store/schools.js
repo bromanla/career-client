@@ -20,6 +20,13 @@ export default {
         throw err
       }
     },
+    async post (_, { body }) {
+      try {
+        return await api.post(`/schools`, body)
+      } catch (err) {
+        throw err
+      }
+    },
     async patch (_, { id, body }) {
       try {
         return await api.patch(`/schools/${id}`, body)
