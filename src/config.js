@@ -1,3 +1,3 @@
 export default {
-  api: 'http://bromanla.local/api/'
+  api: 'http://bromanla.local/api'
 }

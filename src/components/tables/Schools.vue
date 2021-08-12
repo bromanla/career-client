@@ -1,35 +1,28 @@
 <template>
   <el-table
+    border
     class="table"
     :data="tableData"
-    v-loading="loading"
-    border
-    empty-text="Нет данных"
-  >
+    v-loading="isLoading"
+    :empty-text="tableLabel">
     <el-table-column
       prop="id"
       label="Id"
       width="50"
       align="center"
-    >
-    </el-table-column>
-    <el-table-column
-      prop="name"
-      label="Name"
-    >
-    </el-table-column>
+    ></el-table-column>
+    <el-table-column prop="name" label="Name"></el-table-column>
     <el-table-column
       fixed="right"
       label="Operations"
       width="160"
-      align="center"
-    >
+      align="center">
       <template #default="scope">
         <table-operations
-          @show="showSchool(scope.row)"
-          @edit="editSchool(scope.row)"
-          @delete="deleteSchool(scope.row)"
-        ></table-operations>
+          @show="$router.push(`/schools/${scope.row.id}`)"
+          @edit="$router.push(`/schools/${scope.row.id}?edit`)"
+          @delete="deleteRecord(scope.row)">
+        </table-operations>
       </template>
     </el-table-column>
   </el-table>
@@ -40,7 +33,7 @@
     :page-size="perPage"
     :total="totalRows"
     v-model:currentPage="currentPage"
-    @current-change="paginationChange"
+    @update:current-page="paginationChange"
   >
   </el-pagination>
 
@@ -71,17 +64,14 @@
 <script>
   import TableOperations from '@/components/TableOperations.vue'
   import FixedAddButton from '@/components/FixedAddButton.vue'
+  import TableMixin from '@/mixins/table.js'
 
   export default {
     name: 'table-content',
+    mixins: [ TableMixin ],
     components: { TableOperations, FixedAddButton },
     data() {
       return {
-        tableData: [],
-        loading: true,
-        totalRows: 0,
-        perPage: 0,
-        currentPage: 1,
         addVisible: false,
         addFormData: {},
         addFormRules: {
@@ -107,55 +97,14 @@
           }
         })
       },
-      showSchool: function(row) {
-        const { id } = row
-        this.$router.push(`/schools/${id}`)
+      // Override TableMixin methods
+      tableDataLoading: async function () {
+        const { schools: data, meta } = await this.$store.dispatch('schools/fetchSchools', { page: this.currentPage })
+        return { data, meta }
       },
-      editSchool: function(row) {
-        const { id } = row
-        this.$router.push(`/schools/${id}?edit`)
-      },
-      deleteSchool: async function(row) {
-        const { id } = row
-
-        try {
-          await this.$confirm(`Удалить запись?`, {
-            confirmButtonText: 'Да',
-            cancelButtonText: 'Нет',
-            type: 'warning'
-          })
-
-          await this.$store.dispatch('schools/delete', { id })
-
-          await this.paginationChange()
-
-          this.$message({ type: 'success', message: 'Запись удалена' })
-        } catch (e) {
-          if (e === 'cancel')
-            this.$message({ type: 'info', message: 'Удаление отменено' })
-          else
-            this.$notify.error({ title: 'Ошибка', message: e.message })
-        }
-      },
-      paginationChange: async function() {
-        try {
-          this.loading = true
-          const { schools, meta } = await this.$store.dispatch('schools/fetchSchools', { page: this.currentPage })
-
-          // Данные пагинации
-          this.totalRows = meta.totalRows
-          this.perPage = meta.perPage
-
-          // Данные таблицы
-          this.tableData = schools
-          this.loading = false
-        } catch ({message}) {
-          this.$notify.error({ title: 'Ошибка', message })
-        }
+      deleteRecordAction: async function (id) {
+        return this.$store.dispatch('schools/delete', { id })
       }
-    },
-    async mounted() {
-      await this.paginationChange()
     }
   }
 </script>
@@ -167,6 +116,6 @@
   }
 
   .pagination {
-    margin: auto auto 1rem auto
+    margin: auto auto 1rem auto;
   }
 </style>

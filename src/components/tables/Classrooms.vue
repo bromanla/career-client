@@ -1,11 +1,10 @@
 <template>
   <el-table
+    border
     class="table"
     :data="tableData"
-    v-loading="loading"
-    border
-    empty-text="Загрузка"
-  >
+    v-loading="isLoading"
+    :empty-text="tableLabel">
     <el-table-column
       prop="id"
       label="Id"
@@ -13,15 +12,8 @@
       align="center"
     >
     </el-table-column>
-    <el-table-column
-      prop="className"
-      label="Name"
-    >
-    </el-table-column>
-    <el-table-column
-      prop="school.name"
-      label="School">
-    </el-table-column>
+    <el-table-column prop="className" label="Name"></el-table-column>
+    <el-table-column prop="school.name" label="School"></el-table-column>
     <el-table-column
       fixed="right"
       label="Operations"
@@ -30,10 +22,9 @@
     >
       <template #default="scope">
         <table-operations
-          @show="showClassroom(scope.row)"
-          @edit="editClassroom(scope.row)"
-          @delete="deleteClassroom(scope.row)"
-        ></table-operations>
+          @show="$router.push(`/classrooms/${scope.row.id}`)"
+          @edit="$router.push(`/classrooms/${scope.row.id}?edit`)"
+          @delete="deleteRecord(scope.row)"></table-operations>
       </template>
     </el-table-column>
   </el-table>
@@ -44,8 +35,8 @@
     :page-size="perPage"
     :total="totalRows"
     v-model:currentPage="currentPage"
-    @current-change="paginationChange">
-  </el-pagination>
+    @update:current-page="paginationChange"
+  ></el-pagination>
 
   <fixed-add-button @action="addVisible = true"></fixed-add-button>
 
@@ -78,17 +69,14 @@
 <script>
   import TableOperations from '@/components/TableOperations.vue'
   import FixedAddButton from '@/components/FixedAddButton.vue'
+  import TableMixin from '@/mixins/table.js'
 
   export default {
     name: 'table-content',
+    mixins: [ TableMixin ],
     components: { TableOperations, FixedAddButton },
     data() {
       return {
-        tableData: [],
-        loading: true,
-        totalRows: 0,
-        perPage: 0,
-        currentPage: 1,
         addVisible: false,
         addFormData: {},
         addFormRules: {
@@ -115,53 +103,19 @@
 
               this.addFormData = {}
               this.addVisible = false
-            } catch ({message}) {
+            } catch ({ message }) {
               this.$notify.error({ title: 'Ошибка', message: message })
             }
           }
         })
       },
-      showClassroom: function(row) {
-        const { id } = row
-        this.$router.push(`/classrooms/${id}`)
+      // Override TableMixin methods
+      tableDataLoading: async function () {
+        const { classrooms: data, meta } = await this.$store.dispatch('classrooms/fetchClassrooms', { page: this.currentPage })
+        return { data, meta }
       },
-      editClassroom: function(row) {
-        const { id } = row
-        this.$router.push(`/classrooms/${id}?edit`)
-      },
-      deleteClassroom: async function(row) {
-        const { id } = row
-
-        try {
-          await this.$confirm(`Удалить запись?`, {
-            confirmButtonText: 'Да',
-            cancelButtonText: 'Нет',
-            type: 'warning'
-          })
-
-          await this.$store.dispatch('classrooms/delete', { id })
-
-          await this.paginationChange()
-
-          this.$message({ type: 'success', message: 'Запись удалена' })
-        } catch (e) {
-          if (e === 'cancel')
-            this.$message({ type: 'info', message: 'Удаление отменено' })
-          else
-            this.$notify.error({ title: 'Ошибка', message: e.message })
-        }
-      },
-      paginationChange: async function() {
-        this.loading = true
-        const { classrooms, meta } = await this.$store.dispatch('classrooms/fetchClassrooms', { page: this.currentPage })
-
-        // Данные пагинации
-        this.totalRows = meta.totalRows
-        this.perPage = meta.perPage
-
-        // Данные таблицы
-        this.tableData = classrooms
-        this.loading = false
+      deleteRecordAction: async function (id) {
+        return this.$store.dispatch('classrooms/delete', { id })
       }
     },
     async mounted() {
@@ -177,6 +131,6 @@
   }
 
   .pagination {
-    margin: auto auto 1rem auto
+    margin: auto auto 1rem auto;
   }
 </style>

@@ -16,7 +16,7 @@ export default {
       return Boolean(state.login && state.access && state.refresh && state.exp)
     },
     isExp(state) {
-      return state?.exp ? Number(state.exp) <= Math.floor(Date.now() / 1000) : false
+      return Number(state.exp) <= Math.floor(Date.now() / 1000)
     },
     access(state) {
       return state.access

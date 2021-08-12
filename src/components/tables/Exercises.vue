@@ -4,7 +4,7 @@
     :data="tableData"
     v-loading="isLoading"
     border
-    empty-text="Нет данных"
+    empty-text="Загрузка"
   >
     <el-table-column
       prop="id"
@@ -109,6 +109,6 @@
   }
 
   .pagination {
-    margin: auto auto 1rem auto
+    margin: auto auto 1rem auto;
   }
 </style>

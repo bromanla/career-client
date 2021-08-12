@@ -1,39 +1,29 @@
 <template>
   <el-table
+    border
     class="table"
     :data="tableData"
-    v-loading="loading"
-    border
-    empty-text="Загрузка"
-  >
+    v-loading="isLoading"
+    :empty-text="tableLabel">
     <el-table-column
       prop="id"
       label="Id"
       width="50"
       align="center"
-    >
-    </el-table-column>
-    <el-table-column
-      prop="login"
-      label="Login"
-    >
-    </el-table-column>
-    <el-table-column
-      prop="role"
-      label="Role">
-    </el-table-column>
+    ></el-table-column>
+    <el-table-column prop="login" label="Login"></el-table-column>
+    <el-table-column prop="role" label="Role"></el-table-column>
     <el-table-column
       fixed="right"
       label="Operations"
       width="160"
-      align="center"
-    >
+      align="center">
       <template #default="scope">
         <table-operations
-          @show="showUser(scope.row)"
-          @edit="editUser(scope.row)"
-          @delete="deleteUser(scope.row)"
-        ></table-operations>
+          @show="$router.push(`/users/${scope.row.id}`)"
+          @edit="$router.push(`/users/${scope.row.id}?edit`)"
+          @delete="deleteRecord(scope.row)">
+        </table-operations>
       </template>
     </el-table-column>
   </el-table>
@@ -44,11 +34,11 @@
     :page-size="perPage"
     :total="totalRows"
     v-model:currentPage="currentPage"
-    @current-change="paginationChange"
-  >
-  </el-pagination>
+    @update:current-page="paginationChange"
+  ></el-pagination>
 
   <fixed-add-button @action="addVisible = true"></fixed-add-button>
+
   <el-dialog
     title="Добавление пользователя"
     v-model="addVisible"
@@ -87,17 +77,14 @@
 <script>
   import TableOperations from '@/components/TableOperations.vue'
   import FixedAddButton from '@/components/FixedAddButton.vue'
+  import TableMixin from '@/mixins/table.js'
 
   export default {
     name: 'table-content',
+    mixins: [ TableMixin ],
     components: { TableOperations, FixedAddButton },
     data() {
       return {
-        tableData: [],
-        loading: true,
-        totalRows: 0,
-        perPage: 0,
-        currentPage: 1,
         addVisible: false,
         addFormData: {},
         addFormRules: {
@@ -131,59 +118,19 @@
               this.addFormData = {}
               this.addVisible = false
             } catch ({message}) {
-              this.$notify.error({ title: 'Ошибка', message: message })
+              this.$notify.error({ title: 'Ошибка', message })
             }
           }
         })
       },
-      showUser: function(row) {
-        const { id } = row
-        this.$router.push(`/users/${id}`)
+      // Override TableMixin methods
+      tableDataLoading: async function () {
+        const { users: data, meta } = await this.$store.dispatch('users/all', { page: this.currentPage })
+        return { data, meta }
       },
-      editUser: function(row) {
-        const { id } = row
-        this.$router.push(`/users/${id}?edit`)
-      },
-      deleteUser: async function(row) {
-        const { id } = row
-
-        try {
-          await this.$confirm(`Удалить запись?`, {
-            confirmButtonText: 'Да',
-            cancelButtonText: 'Нет',
-            type: 'warning'
-          })
-
-          await this.$store.dispatch('users/delete', { id })
-          await this.paginationChange()
-
-          this.$message({ type: 'success', message: 'Запись удалена' })
-        } catch (e) {
-          if (e === 'cancel')
-            this.$message({ type: 'info', message: 'Удаление отменено' })
-          else
-            this.$notify.error({ title: 'Ошибка', message: e.message })
-        }
-      },
-      paginationChange: async function() {
-        try {
-          this.loading = true
-          const { users, meta } = await this.$store.dispatch('users/all', { page: this.currentPage })
-
-          // Данные пагинации
-          this.totalRows = meta.totalRows
-          this.perPage = meta.perPage
-
-          // Данные таблицы
-          this.tableData = users
-          this.loading = false
-        } catch ({message}) {
-          this.$notify.error({ title: 'Ошибка', message })
-        }
+      deleteRecordAction: async function (id) {
+        return this.$store.dispatch('users/delete', { id })
       }
-    },
-    async mounted() {
-      await this.paginationChange()
     }
   }
 </script>

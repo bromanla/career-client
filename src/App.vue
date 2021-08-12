@@ -3,20 +3,20 @@
 </template>
 
 <script>
-import api from '@/api/index.js'
+import axios from 'axios'
+import config from '@/config.js'
 
 export default {
   async mounted() {
     try {
       // После загрузки приложения отправляем тестовый запрос на сервер для проверки его работоспособноти
-      await api.get('/health')
+      await axios.get(`${config.api}/health`)
       console.info('Server available')
     } catch {
       await this.$alert('Попробуйте перезагрузить страницу', 'Сервер недоступен', {
         type: 'error'
       })
     }
-    // this.$store.dispatch('auth/fetchLogin')
   }
 }
 </script>
