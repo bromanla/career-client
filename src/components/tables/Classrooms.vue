@@ -15,7 +15,6 @@
     <el-table-column prop="className" label="Name"></el-table-column>
     <el-table-column prop="school.name" label="School"></el-table-column>
     <el-table-column
-      fixed="right"
       label="Operations"
       width="160"
       align="center"

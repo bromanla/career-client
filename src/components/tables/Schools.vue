@@ -13,7 +13,6 @@
     ></el-table-column>
     <el-table-column prop="name" label="Name"></el-table-column>
     <el-table-column
-      fixed="right"
       label="Operations"
       width="160"
       align="center">

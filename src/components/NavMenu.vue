@@ -1,6 +1,6 @@
 <template>
-  <el-aside width="200px">
-    <el-menu :default-active="$route.meta.nav" :router="true">
+  <el-aside :width="isCollapse ? '64px' : '200px'">
+    <el-menu :default-active="$route.meta.nav" :router="true" :collapse="isCollapse">
       <el-menu-item index="users" route="/users">
         <i class="el-icon-user"></i>
         <span>Пользователи</span>
@@ -22,9 +22,22 @@
 </template>
 
 <script>
-export default {
-  name: 'nav-menu'
-}
+  export default {
+    name: 'nav-menu',
+    data() {
+      return {
+        isCollapse: false
+      }
+    },
+    created() {
+      const resize = () => this.isCollapse = document.documentElement.clientWidth <= 650
+      resize()
+
+      window.addEventListener('resize' , () => {
+        resize()
+      })
+    }
+  }
 </script>
 
 <style scoped>

@@ -14,7 +14,6 @@
     <el-table-column prop="login" label="Login"></el-table-column>
     <el-table-column prop="role" label="Role"></el-table-column>
     <el-table-column
-      fixed="right"
       label="Operations"
       width="160"
       align="center">
