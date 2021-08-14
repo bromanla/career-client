@@ -3,22 +3,25 @@
     <el-tooltip content="Подробно" placement="top">
       <el-button
         size="mini"
-        icon="el-icon-zoom-in"
-        @click="$emit('show')"></el-button>
+        @click="$emit('show')">
+        <i class="el-icon-zoom-in"></i>
+      </el-button>
     </el-tooltip>
 
     <el-tooltip content="Редактировать" placement="top">
       <el-button
         size="mini"
-        icon="el-icon-edit"
-        @click="$emit('edit')"></el-button>
+        @click="$emit('edit')">
+        <i class="el-icon-edit"></i>
+      </el-button>
     </el-tooltip>
 
     <el-tooltip content="Удалить" placement="top">
       <el-button
         size="mini"
-        icon="el-icon-delete"
-        @click="$emit('delete')"></el-button>
+        @click="$emit('delete')">
+        <i class="el-icon-delete"></i>
+      </el-button>
     </el-tooltip>
   </el-button-group>
 </template>

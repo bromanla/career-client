@@ -9,13 +9,13 @@
       prop="id"
       label="Id"
       width="50"
-      align="center"
-    ></el-table-column>
+      align="center">
+    </el-table-column>
     <el-table-column
       prop="name"
       label="Name"
-      min-width="150"
-    ></el-table-column>
+      min-width="150">
+    </el-table-column>
     <el-table-column
       label="Operations"
       width="160"
@@ -39,7 +39,9 @@
     @update:current-page="paginationChange">
   </el-pagination>
 
-  <fixed-add-button @action="dialogVisible = true"></fixed-add-button>
+  <fixed-add-button
+    @action="dialogVisible = true">
+  </fixed-add-button>
 
   <add-school-dialog
     v-bind:isVisible="dialogVisible"

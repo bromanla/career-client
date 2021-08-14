@@ -9,18 +9,18 @@
       prop="id"
       label="Id"
       width="50"
-      align="center"
-    ></el-table-column>
+      align="center">
+    </el-table-column>
     <el-table-column
       prop="name"
       label="Name"
-      min-width="150"
-    ></el-table-column>
+      min-width="150">
+    </el-table-column>
     <el-table-column
       prop="description"
       label="Description"
-      min-width="250"
-    ></el-table-column>
+      min-width="250">
+    </el-table-column>
     <el-table-column
       label="Operations"
       width="160"
@@ -44,7 +44,9 @@
     @update:current-page="paginationChange">
   </el-pagination>
 
-  <fixed-add-button @action="addExercises"></fixed-add-button>
+  <fixed-add-button
+    @action="$router.push('/exercises?add')">
+  </fixed-add-button>
 </template>
 
 <script>
@@ -60,9 +62,6 @@
       return {}
     },
     methods: {
-      addExercises: function() {
-        $this.$router.push('/exercises?add')
-      },
       // Override TableMixin methods
       tableDataLoading: async function () {
         const { exercises: data, meta } = await this.$store.dispatch('exercises/fetchExercises', { page: this.currentPage })

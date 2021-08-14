@@ -1,12 +1,12 @@
 <template>
-  <el-card class="container">
+  <el-card>
     <el-empty description="Ничего не найдено"></el-empty>
   </el-card>
 
 </template>
 
 <style scoped>
-  .container {
+  .el-card {
     flex-grow: 1;
   }
 </style>

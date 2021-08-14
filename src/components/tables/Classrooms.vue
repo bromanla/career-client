@@ -9,24 +9,22 @@
       prop="id"
       label="Id"
       width="50"
-      align="center"
-    >
+      align="center">
     </el-table-column>
     <el-table-column
       prop="className"
       label="Name"
-      min-width="150"
-    ></el-table-column>
+      min-width="150">
+    </el-table-column>
     <el-table-column
       prop="school.name"
       label="School"
-      min-width="150"
-    ></el-table-column>
+      min-width="150">
+    </el-table-column>
     <el-table-column
       label="Operations"
       width="160"
-      align="center"
-    >
+      align="center">
       <template #default="scope">
         <table-operations
           @show="$router.push(`/classrooms/${scope.row.id}`)"
@@ -42,16 +40,18 @@
     :page-size="perPage"
     :total="totalRows"
     v-model:currentPage="currentPage"
-    @update:current-page="paginationChange"
-  ></el-pagination>
+    @update:current-page="paginationChange">
+  </el-pagination>
 
-  <fixed-add-button @action="dialogVisible = true"></fixed-add-button>
+  <fixed-add-button
+    @action="dialogVisible = true">
+  </fixed-add-button>
 
   <add-classroom-dialog
     v-bind:isVisible="dialogVisible"
     @close="dialogVisible = false"
-    @refresh="paginationChange"
-  ></add-classroom-dialog>
+    @refresh="paginationChange">
+  </add-classroom-dialog>
 </template>
 
 <script>

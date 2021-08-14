@@ -1,10 +1,14 @@
 <template>
   <el-header>
     <el-row>
-      <el-col class="logo" :span="12">
+      <el-col
+        class="logo"
+        :span="12">
         <span>Career Guidance</span>
       </el-col>
-      <el-col class="menu" :span="12">
+      <el-col
+        class="menu"
+        :span="12">
         <span class="username">{{ $store.getters['auth/login'] }}</span>
         <el-dropdown>
           <el-button type="danger">
@@ -12,7 +16,10 @@
           </el-button>
           <template #dropdown>
             <el-dropdown-menu>
-              <el-dropdown-item @click="logout">Выйти</el-dropdown-item>
+              <el-dropdown-item
+                @click="logout">
+                Выйти
+              </el-dropdown-item>
             </el-dropdown-menu>
           </template>
         </el-dropdown>

@@ -9,18 +9,18 @@
       prop="id"
       label="Id"
       width="50"
-      align="center"
-    ></el-table-column>
+      align="center">
+    </el-table-column>
     <el-table-column
       prop="login"
       label="Login"
-      min-width="150"
-    ></el-table-column>
+      min-width="150">
+    </el-table-column>
     <el-table-column
       prop="role"
       label="Role"
-      min-width="80"
-    ></el-table-column>
+      min-width="80">
+    </el-table-column>
     <el-table-column
       label="Operations"
       width="160"
@@ -41,16 +41,18 @@
     :page-size="perPage"
     :total="totalRows"
     v-model:currentPage="currentPage"
-    @update:current-page="paginationChange"
-  ></el-pagination>
+    @update:current-page="paginationChange">
+  </el-pagination>
 
-  <fixed-add-button @action="dialogVisible = true"></fixed-add-button>
+  <fixed-add-button
+    @action="dialogVisible = true">
+  </fixed-add-button>
 
   <add-user-dialog
     v-bind:isVisible="dialogVisible"
     @close="dialogVisible = false"
-    @refresh="paginationChange"
-  ></add-user-dialog>
+    @refresh="paginationChange">
+  </add-user-dialog>
 </template>
 
 <script>

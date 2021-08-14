@@ -1,74 +1,95 @@
 <template>
   <el-card
     shadow="always"
-    header="Авторизация"
-  >
+    header="Авторизация">
     <el-form
       ref="form"
-      :model="form"
       label-position="top"
-      :rules="loginRules"
-      @keypress.enter="onSubmit"
-    >
+      :model="formData"
+      :rules="formRules"
+      v-loading="isLoading"
+      @submit.prevent
+      @keypress.enter="formSubmit">
       <el-form-item
         label="Логин"
         prop="login"
-        :error="loginError"
-      >
-        <el-input v-model="form.login" suffix-icon="el-icon-user"></el-input>
+        :error="serverRules.login">
+        <el-input
+          v-model="formData.login"
+          suffix-icon="el-icon-user">
+        </el-input>
       </el-form-item>
-
-      <el-form-item label="Пароль" prop="password">
-        <el-input show-password v-model="form.password" suffix-icon="el-icon-lock"></el-input>
+      <el-form-item
+        label="Пароль"
+        prop="password">
+        <el-input
+          show-password
+          v-model="formData.password"
+          suffix-icon="el-icon-lock">
+        </el-input>
       </el-form-item>
-
-      <el-form-item>
-        <el-button type="primary" @click="onSubmit">Войти</el-button>
+      <el-form-item align="right">
+        <el-button
+          type="primary"
+          @click="formSubmit">Войти</el-button>
       </el-form-item>
     </el-form>
   </el-card>
 </template>
 
 <script>
-export default {
-  name: 'login-card',
-  data() {
-    return {
-      form: {
-        login: '',
-        password: ''
-      },
-      loginRules: {
-        login: [
-          { required: true, message: 'Поле не может быть пустым', trigger: 'change' }
-        ],
-        password: [
-          { required: true, message: 'Поле не может быть пустым', trigger: 'change' }
-        ]
-      },
-      loginError: ''
-    }
-  },
-  methods: {
-    onSubmit() {
-      this.$refs['form'].validate(async (valid) => {
-        if (valid) {
-          try {
-            await this.$store.dispatch('auth/fetchLogin', this.form)
-            console.log('Success login')
+  export default {
+    name: 'login-card',
+    data() {
+      return {
+        isLoading: false,
+        formData: {},
+        formRules: {
+          login: [
+            { required: true, message: 'Поле не может быть пустым', trigger: 'change' }
+          ],
+          password: [
+            { required: true, message: 'Поле не может быть пустым', trigger: 'change' }
+          ]
+        },
+        serverRules: {}
+      }
+    },
+    methods: {
+      formSubmit() {
+        if (this.isLoading)
+          return false
 
-            this.$router.push('/users')
-          } catch (err) {
-            this.loginError = err.message
+        this.$refs['form'].validate(async (valid) => {
+          if (valid) {
+            try {
+              this.isLoading = true
 
-            // Hack
-            setTimeout(() => this.loginError = '', 3000)
+              const body = {
+                login: this.formData.login,
+                password: this.formData.password
+              }
+
+              await this.$store.dispatch('auth/fetchLogin', body)
+
+              this.$router.push('/users')
+            } catch ({message, subcode = false}) {
+              if ([20].includes(subcode)) {
+                // Login or password invalid
+                if (subcode === 20)
+                  this.serverRules.login = message
+
+                setTimeout(() => this.serverRules = {}, 3000)
+              } else {
+                this.$notify.error({ title: 'Ошибка', message })
+              }
+            }
+            finally {
+              this.isLoading = false
+            }
           }
-        } else {
-          return false;
-        }
-      })
+        })
+      }
     }
   }
-}
 </script>

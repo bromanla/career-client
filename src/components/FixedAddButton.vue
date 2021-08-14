@@ -4,9 +4,9 @@
       @click="$emit('action')"
       class="add-button"
       type="primary"
-      icon="el-icon-plus"
-      circle
-    ></el-button>
+      circle>
+      <i class="el-icon-plus"></i>
+    </el-button>
   </el-tooltip>
 </template>
 
