@@ -19,8 +19,9 @@
 
 <style scoped>
   .add-button {
-    position: absolute;
+    position: fixed;
     right: 1rem;
     bottom: 1rem;
+    z-index: 9999;
   }
 </style>

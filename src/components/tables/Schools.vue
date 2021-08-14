@@ -11,7 +11,11 @@
       width="50"
       align="center"
     ></el-table-column>
-    <el-table-column prop="name" label="Name"></el-table-column>
+    <el-table-column
+      prop="name"
+      label="Name"
+      min-width="150"
+    ></el-table-column>
     <el-table-column
       label="Operations"
       width="160"
@@ -32,70 +36,34 @@
     :page-size="perPage"
     :total="totalRows"
     v-model:currentPage="currentPage"
-    @update:current-page="paginationChange"
-  >
+    @update:current-page="paginationChange">
   </el-pagination>
 
-  <fixed-add-button @action="addVisible = true"></fixed-add-button>
+  <fixed-add-button @action="dialogVisible = true"></fixed-add-button>
 
-  <el-dialog
-    title="Добавление школы"
-    v-model="addVisible"
-    width="500px">
-    <el-form
-      @submit.prevent="addSchool"
-      ref="addForm"
-      :rules="addFormRules"
-      :model="addFormData">
-      <el-form-item prop="name" label="Name">
-        <el-input v-model="addFormData.name"></el-input>
-      </el-form-item>
-      <el-form-item align="right">
-        <div>
-          <el-button @click="addVisible = false">Отменить</el-button>
-          <el-button type="primary" @click="addSchool">Сохранить</el-button>
-        </div>
-      </el-form-item>
-    </el-form>
-  </el-dialog>
+  <add-school-dialog
+    v-bind:isVisible="dialogVisible"
+    @close="dialogVisible = false"
+    @refresh="paginationChange">
+  </add-school-dialog>
 </template>
 
 <script>
   import TableOperations from '@/components/TableOperations.vue'
   import FixedAddButton from '@/components/FixedAddButton.vue'
+  import AddSchoolDialog from '@/components/dialogs/AddSchool.vue'
   import TableMixin from '@/mixins/table.js'
 
   export default {
     name: 'table-content',
     mixins: [ TableMixin ],
-    components: { TableOperations, FixedAddButton },
+    components: { TableOperations, FixedAddButton, AddSchoolDialog },
     data() {
       return {
-        addVisible: false,
-        addFormData: {},
-        addFormRules: {
-          name: [{ required: true, message: 'Поле не может быть пустым', trigger: 'submit' }]
-        }
+        dialogVisible: false,
       }
     },
     methods: {
-      addSchool: function() {
-        this.$refs['addForm'].validate(async (valid) => {
-          if (valid) {
-            try {
-              const body = { name: this.addFormData.name }
-
-              await this.$store.dispatch('schools/post', { body } )
-              await this.paginationChange()
-
-              this.addFormData = {}
-              this.addVisible = false
-            } catch ({message}) {
-              this.$notify.error({ title: 'Ошибка', message: message })
-            }
-          }
-        })
-      },
       // Override TableMixin methods
       tableDataLoading: async function () {
         const { schools: data, meta } = await this.$store.dispatch('schools/fetchSchools', { page: this.currentPage })

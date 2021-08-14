@@ -6,7 +6,7 @@ import subcodes from './subcodes.js'
 
 const api = axios.create({
   baseURL: config.api,
-  timeout: 3000
+  timeout: 5000
 })
 
 // Перехватчик запроса
@@ -38,6 +38,7 @@ api.interceptors.response.use(
   },
   (error) => {
     let message = 'Неизвестная ошибка'
+    let details = {}
 
     if (error.response) {
       switch (error.response.status) {
@@ -46,6 +47,7 @@ api.interceptors.response.use(
 
           if (subcodes.hasOwnProperty(subcode))
             message = subcodes[subcode]
+            details.subcode = subcode
           break
         case 401:
           message = 'Не удалось авторизоваться'
@@ -70,7 +72,7 @@ api.interceptors.response.use(
       console.log(error)
     }
 
-    throw { message }
+    throw { message, ...details }
   }
 )
 

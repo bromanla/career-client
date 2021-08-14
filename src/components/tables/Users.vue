@@ -11,8 +11,16 @@
       width="50"
       align="center"
     ></el-table-column>
-    <el-table-column prop="login" label="Login"></el-table-column>
-    <el-table-column prop="role" label="Role"></el-table-column>
+    <el-table-column
+      prop="login"
+      label="Login"
+      min-width="150"
+    ></el-table-column>
+    <el-table-column
+      prop="role"
+      label="Role"
+      min-width="80"
+    ></el-table-column>
     <el-table-column
       label="Operations"
       width="160"
@@ -36,92 +44,31 @@
     @update:current-page="paginationChange"
   ></el-pagination>
 
-  <fixed-add-button @action="addVisible = true"></fixed-add-button>
+  <fixed-add-button @action="dialogVisible = true"></fixed-add-button>
 
-  <el-dialog
-    title="Добавление пользователя"
-    v-model="addVisible"
-    width="500px">
-    <el-form
-      @submit.prevent="addUser"
-      ref="addForm"
-      label-width="120px"
-      :rules="addFormRules"
-      :model="addFormData">
-      <el-form-item prop="login" label="Login">
-        <el-input v-model="addFormData.login"></el-input>
-      </el-form-item>
-      <el-form-item prop="password" label="Password">
-        <el-input v-model="addFormData.password" show-password></el-input>
-      </el-form-item>
-      <el-form-item prop="role" label="Role">
-        <el-select v-model="addFormData.role">
-          <el-option label="Student" value="student"></el-option>
-          <el-option label="Admin" value="admin"></el-option>
-        </el-select>
-      </el-form-item>
-      <el-form-item prop="classroomId" label="Classroom Id" v-if="addFormData.role === 'student'">
-        <el-input v-model.number="addFormData.classroomId"></el-input>
-      </el-form-item>
-      <el-form-item align="right">
-        <div>
-          <el-button @click="addVisible = false">Отменить</el-button>
-          <el-button type="primary" @click="addUser">Сохранить</el-button>
-        </div>
-      </el-form-item>
-    </el-form>
-  </el-dialog>
+  <add-user-dialog
+    v-bind:isVisible="dialogVisible"
+    @close="dialogVisible = false"
+    @refresh="paginationChange"
+  ></add-user-dialog>
 </template>
 
 <script>
   import TableOperations from '@/components/TableOperations.vue'
   import FixedAddButton from '@/components/FixedAddButton.vue'
+  import AddUserDialog from '@/components/dialogs/AddUser.vue'
   import TableMixin from '@/mixins/table.js'
 
   export default {
     name: 'table-content',
     mixins: [ TableMixin ],
-    components: { TableOperations, FixedAddButton },
+    components: { TableOperations, FixedAddButton, AddUserDialog },
     data() {
       return {
-        addVisible: false,
-        addFormData: {},
-        addFormRules: {
-          login: [{ required: true, message: 'Поле не может быть пустым', trigger: 'submit' }],
-          role: [{ required: true, message: 'Поле не может быть пустым', trigger: 'submit' }],
-          password: [{ required: true, message: 'Поле не может быть пустым', trigger: 'submit' }],
-          classroomId: [
-            { type: 'number', message: 'Поле должно быть числом', trigger: 'submit' },
-            { required: true, message: 'Поле не может быть пустым', trigger: 'submit' }
-          ]
-        }
+        dialogVisible: false
       }
     },
     methods: {
-      addUser: async function() {
-        this.$refs['addForm'].validate(async (valid) => {
-          if (valid) {
-            try {
-              const body = {
-                login: this.addFormData.login,
-                password: this.addFormData.password,
-                role: this.addFormData.role
-              }
-
-              if (this.addFormData.role === 'student')
-                body.classroomId = this.addFormData.classroomId
-
-              await this.$store.dispatch('users/post', { body } )
-              await this.paginationChange()
-
-              this.addFormData = {}
-              this.addVisible = false
-            } catch ({message}) {
-              this.$notify.error({ title: 'Ошибка', message })
-            }
-          }
-        })
-      },
       // Override TableMixin methods
       tableDataLoading: async function () {
         const { users: data, meta } = await this.$store.dispatch('users/all', { page: this.currentPage })
@@ -141,6 +88,6 @@
   }
 
   .pagination {
-    margin: auto auto 1rem auto
+    margin: auto auto 1rem auto;
   }
 </style>

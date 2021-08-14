@@ -18,7 +18,7 @@
         this.$notify.error({
           title: 'Ошибка',
           message: this.$route.params.message
-        });
+        })
       }
     }
   }

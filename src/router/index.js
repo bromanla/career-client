@@ -3,6 +3,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 import store from '@/store/index.js'
 
 import Main from '@/views/Main.vue'
+import Login from '@/views/Login.vue'
 
 import UsersTable from '@/components/tables/Users.vue'
 import ClassroomsTable from '@/components/tables/Classrooms.vue'
@@ -12,7 +13,6 @@ import ExercisesTable from '@/components/tables/Exercises.vue'
 import UsersContent from '@/components/content/Users.vue'
 import ClassroomsContent from '@/components/content/Classrooms.vue'
 import SchoolsContent from '@/components/content/Schools.vue'
-// import ExercisesContent from '@/components/content/Exercises.vue'
 
 import NotFound from '@/components/NotFound.vue'
 
@@ -87,7 +87,7 @@ const routes = [
   {
     path: '/login',
     name: 'login',
-    component: () => import('@/views/Login.vue')
+    component: Login
   },
   {
     path: '/404',

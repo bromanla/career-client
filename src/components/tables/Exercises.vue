@@ -1,38 +1,36 @@
 <template>
   <el-table
+    border
     class="table"
     :data="tableData"
     v-loading="isLoading"
-    border
-    empty-text="Загрузка"
-  >
+    :empty-text="tableLabel">
     <el-table-column
       prop="id"
       label="Id"
       width="50"
       align="center"
-    >
-    </el-table-column>
+    ></el-table-column>
     <el-table-column
       prop="name"
       label="Name"
-    >
-    </el-table-column>
+      min-width="150"
+    ></el-table-column>
     <el-table-column
       prop="description"
-      label="Description">
-    </el-table-column>
+      label="Description"
+      min-width="250"
+    ></el-table-column>
     <el-table-column
       label="Operations"
       width="160"
-      align="center"
-    >
+      align="center">
       <template #default="scope">
         <table-operations
-          @show="showExercises(scope.row)"
-          @edit="editExercises(scope.row)"
-          @delete="deleteExercises(scope.row)"
-        ></table-operations>
+          @show="$router.push(`/exercises/${scope.row.id}`)"
+          @edit="$router.push(`/exercises/${scope.row.id}?edit`)"
+          @delete="deleteRecord(scope.row)">
+        </table-operations>
       </template>
     </el-table-column>
   </el-table>
@@ -43,8 +41,7 @@
     :page-size="perPage"
     :total="totalRows"
     v-model:currentPage="currentPage"
-    @current-change="paginationChange"
-  >
+    @update:current-page="paginationChange">
   </el-pagination>
 
   <fixed-add-button @action="addExercises"></fixed-add-button>
@@ -53,50 +50,24 @@
 <script>
   import TableOperations from '@/components/TableOperations.vue'
   import FixedAddButton from '@/components/FixedAddButton.vue'
+  import TableMixin from '@/mixins/table.js'
 
   export default {
     name: 'table-content',
+    mixins: [ TableMixin ],
     components: { TableOperations, FixedAddButton },
     data() {
-      return {
-        tableData: [],
-        isLoading: true,
-        totalRows: 0,
-        perPage: 0,
-        currentPage: 1
-      }
+      return {}
     },
     methods: {
       addExercises: function() {
         $this.$router.push('/exercises?add')
       },
-      showExercises: function(row) {
-        const { id } = row
-        this.$router.push(`/exercises/${id}`)
-      },
-      editExercises: function(row) {
-        const { id } = row
-        this.$router.push(`/exercises/${id}?edit`)
-      },
-      deleteExercises: function(row) {
-        const { id } = row
-        this.$router.push(`/exercises/${id}`)
-      },
-      paginationChange: async function() {
-        this.isLoading = true
-        const { exercises, meta } = await this.$store.dispatch('exercises/fetchExercises', { page: this.currentPage })
-
-        // Данные пагинации
-        this.totalRows = meta.totalRows
-        this.perPage = meta.perPage
-
-        // Данные таблицы
-        this.tableData = exercises
-        this.isLoading = false
+      // Override TableMixin methods
+      tableDataLoading: async function () {
+        const { exercises: data, meta } = await this.$store.dispatch('exercises/fetchExercises', { page: this.currentPage })
+        return { data, meta }
       }
-    },
-    async mounted() {
-      await this.paginationChange()
     }
   }
 </script>

@@ -12,8 +12,16 @@
       align="center"
     >
     </el-table-column>
-    <el-table-column prop="className" label="Name"></el-table-column>
-    <el-table-column prop="school.name" label="School"></el-table-column>
+    <el-table-column
+      prop="className"
+      label="Name"
+      min-width="150"
+    ></el-table-column>
+    <el-table-column
+      prop="school.name"
+      label="School"
+      min-width="150"
+    ></el-table-column>
     <el-table-column
       label="Operations"
       width="160"
@@ -37,77 +45,31 @@
     @update:current-page="paginationChange"
   ></el-pagination>
 
-  <fixed-add-button @action="addVisible = true"></fixed-add-button>
+  <fixed-add-button @action="dialogVisible = true"></fixed-add-button>
 
-  <el-dialog
-    title="Добавление класса"
-    v-model="addVisible"
-    width="500px">
-    <el-form
-      @submit.prevent="addClassroom"
-      ref="addForm"
-      label-width="100px"
-      :rules="addFormRules"
-      :model="addFormData">
-      <el-form-item prop="className" label="Name">
-        <el-input v-model="addFormData.className"></el-input>
-      </el-form-item>
-      <el-form-item prop="schoolId" label="School Id">
-        <el-input v-model.number="addFormData.schoolId"></el-input>
-      </el-form-item>
-      <el-form-item align="right">
-        <div>
-          <el-button @click="addVisible = false">Отменить</el-button>
-          <el-button type="primary" @click="addClassroom">Сохранить</el-button>
-        </div>
-      </el-form-item>
-    </el-form>
-  </el-dialog>
+  <add-classroom-dialog
+    v-bind:isVisible="dialogVisible"
+    @close="dialogVisible = false"
+    @refresh="paginationChange"
+  ></add-classroom-dialog>
 </template>
 
 <script>
   import TableOperations from '@/components/TableOperations.vue'
   import FixedAddButton from '@/components/FixedAddButton.vue'
+  import AddClassroomDialog from '@/components/dialogs/AddClassroom.vue'
   import TableMixin from '@/mixins/table.js'
 
   export default {
     name: 'table-content',
     mixins: [ TableMixin ],
-    components: { TableOperations, FixedAddButton },
+    components: { TableOperations, FixedAddButton, AddClassroomDialog },
     data() {
       return {
-        addVisible: false,
-        addFormData: {},
-        addFormRules: {
-          className: [{ required: true, message: 'Поле не может быть пустым', trigger: 'submit' }],
-          schoolId: [
-            { type: 'number', message: 'Поле должно быть числом', trigger: 'submit' },
-            { required: true, message: 'Поле не может быть пустым', trigger: 'submit' }
-          ]
-        }
+        dialogVisible: false
       }
     },
     methods: {
-      addClassroom: function() {
-        this.$refs['addForm'].validate(async (valid) => {
-          if (valid) {
-            try {
-              const body = {
-                className: this.addFormData.className,
-                schoolId: this.addFormData.schoolId
-              }
-
-              await this.$store.dispatch('classrooms/post', { body } )
-              await this.paginationChange()
-
-              this.addFormData = {}
-              this.addVisible = false
-            } catch ({ message }) {
-              this.$notify.error({ title: 'Ошибка', message: message })
-            }
-          }
-        })
-      },
       // Override TableMixin methods
       tableDataLoading: async function () {
         const { classrooms: data, meta } = await this.$store.dispatch('classrooms/fetchClassrooms', { page: this.currentPage })
@@ -116,9 +78,6 @@
       deleteRecordAction: async function (id) {
         return this.$store.dispatch('classrooms/delete', { id })
       }
-    },
-    async mounted() {
-      await this.paginationChange()
     }
   }
 </script>
