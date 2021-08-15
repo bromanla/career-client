@@ -28,7 +28,7 @@
       <template #default="scope">
         <table-operations
           @show="$router.push(`/users/${scope.row.id}`)"
-          @edit="$router.push(`/users/${scope.row.id}?edit`)"
+          @edit="$router.push(`/users/${scope.row.id}?edit=true`)"
           @delete="deleteRecord(scope.row)">
         </table-operations>
       </template>

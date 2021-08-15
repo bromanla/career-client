@@ -1,62 +1,131 @@
 <template>
-  <el-card header="Пользователь" shadow="newer" v-loading="isLoading">
+  <el-card header="Пользователь" shadow="newer">
     <el-form
       ref="form"
-      label-width="110px"
-      :model="formData"
+      v-loading="isLoading"
+      label-width="auto"
       :rules="formRules"
-    >
-      <el-form-item label="Id">
-        <el-input v-model="formData.id" :disabled="true"></el-input>
+      :model="formData"
+      @submit.prevent
+      @keypress.enter="editSave">
+      <el-form-item
+        label="Id">
+        <el-input
+          v-model="formData.id"
+          disabled>
+        </el-input>
       </el-form-item>
-      <el-form-item prop="login" label="Name" >
-         <el-input v-model="formData.login" :disabled="!isEdit"></el-input>
+      <el-form-item
+        prop="login"
+        label="Login"
+        :error="serverRules.login">
+        <el-input
+          v-model="formData.login"
+          :disabled="!isEdit">
+        </el-input>
       </el-form-item>
-      <el-form-item  prop="role" label="Role">
-        <el-select v-model="formData.role" :disabled="!isEdit">
+      <el-form-item
+        prop="role"
+        label="Role">
+        <el-select
+          v-model="formData.role"
+          :disabled="!isEdit">
           <el-option label="Student" value="student"></el-option>
           <el-option label="Admin" value="admin"></el-option>
         </el-select>
       </el-form-item>
-      <el-form-item prop="classroomId" label="Classroom Id" v-if="formData.role === 'student'">
-        <el-input v-model.number="formData.classroomId" :disabled="!isEdit"></el-input>
+      <el-form-item
+        v-if="formData.role === 'student'"
+        prop="classroomId"
+        label="Classroom Id"
+        :error="serverRules.classroomId">
+        <el-input
+          v-model.number="formData.classroomId"
+          :disabled="!isEdit">
+        </el-input>
       </el-form-item>
-      <el-form-item prop="className" label="Classroom" v-if="formData.role === 'student'">
-        <el-input v-model.number="formData.className" disabled></el-input>
+      <el-form-item
+        v-if="formData.role === 'student'"
+        prop="className"
+        label="Classroom">
+        <el-input
+          v-model="formData.className"
+          disabled>
+        </el-input>
       </el-form-item>
       <el-form-item align="right">
-        <el-button v-if="!isEdit" @click="isEdit = true">Редактировать</el-button>
-        <div v-if="isEdit">
-          <el-button type="danger" @click="editBack">Отменить</el-button>
-          <el-button type="primary" @click="editSave">Сохранить</el-button>
-        </div>
+        <el-button
+          v-if="!isEdit"
+          @click="isEdit = true">
+          Редактировать
+        </el-button>
+        <template
+          v-if="isEdit">
+          <el-button
+            class="editBtn"
+            type="danger"
+            @click="editBack">
+            Отменить
+          </el-button>
+          <el-button
+            class="editBtn"
+            type="primary"
+            @click="editSave">
+            Сохранить
+          </el-button>
+        </template>
       </el-form-item>
     </el-form>
   </el-card>
 
-  <el-card header="Результаты" shadow="newer" v-if="isExtra">
+  <el-card
+    header="Результаты"
+    shadow="newer"
+    v-if="isExtra">
     <el-table
       stripe
       border
-      :data="extraData"
-    >
-      <el-table-column prop="id" label="Id" width="50" align="center"></el-table-column>
-      <el-table-column prop="man" label="Man"></el-table-column>
-      <el-table-column prop="nature" label="Nature"></el-table-column>
-      <el-table-column prop="technics" label="Technics"></el-table-column>
-      <el-table-column prop="sign" label="Sign"></el-table-column>
-      <el-table-column prop="artistic" label="Artistic"></el-table-column>
+      :data="extraData">
       <el-table-column
-        fixed="right"
+        prop="id"
+        label="Id"
+        width="50"
+        align="center">
+      </el-table-column>
+      <el-table-column
+        prop="man"
+        label="Man"
+        min-width="85">
+      </el-table-column>
+      <el-table-column
+        prop="nature"
+        label="Nature"
+        min-width="85">
+      </el-table-column>
+      <el-table-column
+        prop="technics"
+        label="Technics"
+        min-width="85">
+      </el-table-column>
+      <el-table-column
+        prop="sign"
+        label="Sign"
+        min-width="85">
+      </el-table-column>
+      <el-table-column
+        prop="artistic"
+        label="Artistic"
+        min-width="85">
+      </el-table-column>
+      <el-table-column
         label="Operations"
-        width="160"
-        align="center"
-      >
+        width="100"
+        align="center">
         <template #default="scope">
           <el-button
             size="mini"
-            icon="el-icon-zoom-in"
-            @click="showExercisers(scope.row)">
+            @click="$router.push(`/exercises/${scope.row.exerciseId}`)">
+            <i class="el-icon-zoom-in"></i>
           </el-button>
         </template>
       </el-table-column>
@@ -75,13 +144,14 @@
         formDataCopy: {},
         extraData: [],
         formRules: {
-          login: [{ required: true, message: 'Поле не может быть пустым' }],
-          role: [{ required: true, message: 'Поле не может быть пустым' }],
+          login: { required: true, message: 'Поле не может быть пустым' },
+          role: { required: true, message: 'Поле не может быть пустым' },
           classroomId: [
             { type: 'number', message: 'Поле должно быть числом' },
             { required: true, message: 'Поле не может быть пустым' }
           ]
-        }
+        },
+        serverRules: {}
       }
     },
     methods: {
@@ -90,35 +160,50 @@
         this.isEdit = false
       },
       editSave () {
+        if (this.isLoading)
+          return false
+
         this.$refs['form'].validate(async (valid) => {
           if (valid) {
             try {
-              const { id, login, role, classroomId } = this.formData
+              this.isLoading = true
+              const id = this.formData.id
 
-              const body = { login, role }
-
-              if (role === 'student')
-                body.classroomId = classroomId
+              const body = {
+                login: this.formData.login,
+                role: this.formData.role,
+                classroomId: this.formData.role === 'student' ? this.formData.classroomId : undefined
+              }
 
               const response = await this.$store.dispatch('users/patch', { id, body } )
 
               this.formData.className = response.classroom?.className
-
               this.formDataCopy = { ...this.formData }
-              this.$message({ type: 'success', message: 'Запись Изменена' })
-              this.isEdit = false
+              this.$message({ type: 'success', message: 'Запись изменена' })
 
-            } catch ({ message }) {
-              this.$notify.error({ title: 'Ошибка', message: message })
+              this.isEdit = false
+              this.$router.push(this.$route.path)
             }
-          } else {
-            return false;
+            catch ({message, subcode = false}) {
+              if ([41, 44].includes(subcode)) {
+                // Login already exist
+                if (subcode === 41)
+                  this.serverRules.classroomId = message
+
+                // Classroom not found
+                if (subcode === 44)
+                  this.serverRules.login = message
+
+                setTimeout(() => this.serverRules = {}, 3000)
+              } else {
+                this.$notify.error({ title: 'Ошибка', message })
+              }
+            }
+            finally {
+              this.isLoading = false
+            }
           }
         })
-      },
-      showExercisers: function (row) {
-        const { exerciseId } = row
-        this.$router.push(`/exercises/${exerciseId}`)
       }
     },
     async mounted() {
@@ -144,25 +229,31 @@
           this.extraData = data.results
         }
 
-        this.isLoading = false
-
-        if ('edit' in this.$route.query)
+        if (this.$route.query.edit === 'true')
           this.isEdit = true
+
+        this.isLoading = false
       } catch ({ message }) {
          this.$notify.error({ title: 'Ошибка', message })
       }
-
     }
   }
 </script>
 
 <style scoped>
   .el-form {
-    width: 400px;
+    max-width: 500px;
   }
 
   .el-card {
     border-radius: 0px;
   }
 
+  .el-button:first-child {
+    margin-bottom: 10px;
+  }
+
+  .editBtn {
+    width: 110px;
+  }
 </style>

@@ -1,46 +1,81 @@
 <template>
-  <el-card header="Школа" shadow="newer" v-loading="isLoading">
+  <el-card header="Школа" shadow="newer">
     <el-form
       ref="form"
-      label-width="50px"
-      :model="formData"
+      v-loading="isLoading"
+      label-width="auto"
       :rules="formRules"
-    >
-      <el-form-item label="Id">
-        <el-input v-model="formData.id" :disabled="true"></el-input>
+      :model="formData"
+      @submit.prevent
+      @keypress.enter="editSave">
+      <el-form-item
+        label="Id">
+        <el-input
+          v-model="formData.id"
+          disabled>
+        </el-input>
       </el-form-item>
-      <el-form-item prop="name" label="Name" >
-         <el-input v-model="formData.name" :disabled="!isEdit"></el-input>
+      <el-form-item
+        prop="name"
+        label="Name">
+        <el-input
+          v-model="formData.name"
+          :disabled="!isEdit">
+        </el-input>
       </el-form-item>
       <el-form-item align="right">
-        <el-button v-if="!isEdit" @click="isEdit = true">Редактировать</el-button>
-        <div v-if="isEdit">
-          <el-button type="danger" @click="editBack">Отменить</el-button>
-          <el-button type="primary" @click="editSave">Сохранить</el-button>
-        </div>
+        <el-button
+          v-if="!isEdit"
+          @click="isEdit = true">
+          Редактировать
+        </el-button>
+        <template
+          v-if="isEdit">
+          <el-button
+            class="editBtn"
+            type="danger"
+            @click="editBack">
+            Отменить
+          </el-button>
+          <el-button
+            class="editBtn"
+            type="primary"
+            @click="editSave">
+            Сохранить
+          </el-button>
+        </template>
       </el-form-item>
     </el-form>
   </el-card>
 
-  <el-card header="Классы" shadow="newer" v-if="isExtra">
+  <el-card
+    header="Классы"
+    shadow="newer"
+    v-if="isExtra">
     <el-table
       stripe
       border
-      :data="extraData"
-    >
-      <el-table-column prop="id" label="Id" width="50" align="center"></el-table-column>
-      <el-table-column prop="className" label="Name"></el-table-column>
+      :data="extraData">
       <el-table-column
-        fixed="right"
+        prop="id"
+        label="Id"
+        width="50"
+        align="center">
+      </el-table-column>
+      <el-table-column
+        prop="className"
+        label="Name"
+        min-width="150">
+      </el-table-column>
+      <el-table-column
         label="Operations"
-        width="160"
-        align="center"
-      >
+        width="100"
+        align="center">
         <template #default="scope">
           <el-button
             size="mini"
-            icon="el-icon-zoom-in"
-            @click="showClassroom(scope.row)">
+            @click="$router.push(`/classrooms/${scope.row.id}`)">
+            <i class="el-icon-zoom-in"></i>
           </el-button>
         </template>
       </el-table-column>
@@ -59,7 +94,7 @@
         formDataCopy: {},
         extraData: [],
         formRules: {
-          name: [{ required: true, message: 'Поле не может быть пустым', trigger: 'change' }]
+          name: { required: true, message: 'Поле не может быть пустым' }
         }
       }
     },
@@ -69,27 +104,35 @@
         this.isEdit = false
       },
       editSave () {
+        if (this.isLoading)
+          return false
+
         this.$refs['form'].validate(async (valid) => {
           if (valid) {
             try {
-              const { id, ...body } = this.formData
+              this.isLoading = true
+              const id = this.formData.id
+
+              const body = {
+                name: this.formData.name
+              }
+
               await this.$store.dispatch('schools/patch', { id, body })
 
               this.formDataCopy = { ...this.formData }
               this.$message({ type: 'success', message: 'Запись Изменена' })
-              this.isEdit = false
 
-            } catch ({ message }) {
+              this.isEdit = false
+              this.$router.push(this.$route.path)
+            }
+            catch ({ message }) {
               this.$notify.error({ title: 'Ошибка', message: message })
             }
-          } else {
-            return false;
+            finally {
+              this.isLoading = false
+            }
           }
         })
-      },
-      showClassroom (row) {
-        const { id } = row
-        this.$router.push(`/classrooms/${id}`)
       }
     },
     async mounted() {
@@ -112,24 +155,31 @@
           this.extraData = classrooms
         }
 
-        this.isLoading = false
-
-        if ('edit' in this.$route.query)
+        if (this.$route.query.edit === 'true')
           this.isEdit = true
+
+        this.isLoading = false
       } catch ({ message }) {
-         this.$notify.error({ title: 'Ошибка', message })
+        this.$notify.error({ title: 'Ошибка', message })
       }
     }
   }
 </script>
 
 <style scoped>
-  .el-form {
-    width: 400px;
+ .el-form {
+    max-width: 500px;
   }
 
   .el-card {
     border-radius: 0px;
   }
 
+  .el-button:first-child {
+    margin-bottom: 10px;
+  }
+
+  .editBtn {
+    width: 110px;
+  }
 </style>
