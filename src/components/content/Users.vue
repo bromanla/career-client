@@ -53,7 +53,7 @@
           disabled>
         </el-input>
       </el-form-item>
-      <el-form-item align="right">
+      <div align="right">
         <el-button
           v-if="!isEdit"
           @click="isEdit = true">
@@ -74,7 +74,7 @@
             Сохранить
           </el-button>
         </template>
-      </el-form-item>
+      </div>
     </el-form>
   </el-card>
 

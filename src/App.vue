@@ -33,6 +33,12 @@ export default {
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     color: #2c3e50;
+
+  }
+
+  /* Fix Element Plus bug */
+  .el-message-box {
+    max-width: 95%
   }
 
   @media (max-width: 650px)  {

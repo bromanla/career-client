@@ -1,5 +1,5 @@
 <template>
-  <el-card>
+  <el-card shadow="never">
     <el-empty description="Ничего не найдено"></el-empty>
   </el-card>
 
