@@ -17,6 +17,12 @@
           <template #dropdown>
             <el-dropdown-menu>
               <el-dropdown-item
+                v-loading.fullscreen.lock="fullscreenLoading"
+                @click="unloading">
+                Выгрузка
+              </el-dropdown-item>
+              <el-dropdown-item
+                id="logout"
                 @click="logout">
                 Выйти
               </el-dropdown-item>
@@ -29,9 +35,47 @@
 </template>
 
 <script>
+  import xlsx from 'xlsx'
+
   export default {
     name: 'panel-header',
+    data() {
+      return {
+        fullscreenLoading: false
+      }
+    },
     methods: {
+      async unloading() {
+        try {
+          this.fullscreenLoading = true
+
+          // Loading data in server
+          const sheetData = await this.$store.dispatch('results/unloading')
+
+          // Creating xlsx document
+          const workbook = xlsx.utils.book_new()
+          const worksheet = xlsx.utils.aoa_to_sheet(sheetData)
+          xlsx.utils.book_append_sheet(workbook, worksheet, 'Данные')
+
+          this.fullscreenLoading = false
+
+          await this.$confirm(`Выгрузка данных (${sheetData.length - 1 })`, {
+            type: 'info',
+            confirmButtonText: 'Скачать',
+            showCancelButton: false
+          })
+
+          // Download file if confirm is ok
+          xlsx.writeFile(workbook, 'Unloading.xlsb')
+        }
+        catch (e) {
+          if (e !== 'cancel')
+            this.$notify.error({ title: 'Ошибка', message: e.message })
+        }
+        finally {
+          this.fullscreenLoading = false
+        }
+      },
       logout() {
         this.$store.dispatch('auth/logout')
         this.$router.push({ name: 'login' })
@@ -71,5 +115,11 @@
   .el-dropdown-menu a {
     color: inherit;
     text-decoration: none;
+  }
+
+  .el-dropdown-menu__item:hover {
+    transition: 0.5s;
+    border-radius: 2px;
+    background: #EBEEF5 !important;
   }
 </style>

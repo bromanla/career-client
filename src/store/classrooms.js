@@ -2,44 +2,23 @@ import api from '@/api/index.js'
 
 export default {
   namespaced: true,
-  state: () => ({}),
-  getters: {},
-  mutations: {},
   actions: {
     async fetchClassrooms(ctx, { page }) {
-      const data = await api.get('/classrooms', {
+      return await api.get('/classrooms', {
         params: { page }
       })
-
-      return data
     },
     async byId (_, { id }) {
-      try {
-        return await api.get(`/classrooms/${id}`)
-      } catch (err) {
-        throw err
-      }
+      return await api.get(`/classrooms/${id}`)
     },
     async post (_, { body }) {
-      try {
-        return await api.post(`/classrooms`, body)
-      } catch (err) {
-        throw err
-      }
+      return await api.post(`/classrooms`, body)
     },
     async patch (_, { id, body }) {
-      try {
-        return await api.patch(`/classrooms/${id}`, body)
-      } catch (err) {
-        throw err
-      }
+      return await api.patch(`/classrooms/${id}`, body)
     },
     async delete(_, { id }) {
-      try {
-        return await api.delete(`/classrooms/${id}`)
-      } catch (err) {
-        throw err
-      }
+      return await api.delete(`/classrooms/${id}`)
     }
   }
 }

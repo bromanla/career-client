@@ -68,7 +68,11 @@ api.interceptors.response.use(
           console.log(error.response)
           break
       }
-    } else {
+    }
+    else if (error.code === 'ECONNABORTED') {
+      message = 'Сервер не отвечает'
+    }
+    else {
       console.log(error)
     }
 
