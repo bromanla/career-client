@@ -10,9 +10,9 @@
     "@element-plus/icons": "^0.0.11",
     "axios": "^0.21.1",
     "core-js": "^3.6.5",
-    "element-plus": "^1.1.0-beta.5",
+    "element-plus": "^1.0.2-beta.71",
     "jsonwebtoken": "^8.5.1",
-    "vue": "^3.2.6",
+    "vue": "^3.0.0",
     "vue-router": "^4.0.0-0",
     "vuex": "^4.0.0-0",
     "xlsx": "^0.17.1"
