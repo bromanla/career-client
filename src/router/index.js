@@ -13,6 +13,7 @@ import ExercisesTable from '@/components/tables/Exercises.vue'
 import UsersContent from '@/components/content/Users.vue'
 import ClassroomsContent from '@/components/content/Classrooms.vue'
 import SchoolsContent from '@/components/content/Schools.vue'
+import ExercisesContent from '@/components/content/Exercises.vue'
 
 import NotFound from '@/components/NotFound.vue'
 
@@ -66,6 +67,12 @@ const routes = [
         path: '/exercises',
         component: ExercisesTable,
         name: 'exercisesTable',
+        meta: { nav: 'exercises' }
+      },
+      {
+        path: '/exercises/:id',
+        component: ExercisesContent,
+        name: 'exercisesContent',
         meta: { nav: 'exercises' }
       }
     ],

@@ -23,14 +23,16 @@
     </el-table-column>
     <el-table-column
       label="Operations"
-      width="160"
+      width="100"
       align="center">
       <template #default="scope">
-        <table-operations
-          @show="$router.push(`/exercises/${scope.row.id}`)"
-          @edit="$router.push(`/exercises/${scope.row.id}?edit`)"
-          @delete="deleteRecord(scope.row)">
-        </table-operations>
+        <el-tooltip content="Подробно" placement="top">
+          <el-button
+            size="mini"
+            @click="$router.push(`/exercises/${scope.row.id}`)">
+            <i class="el-icon-zoom-in"></i>
+          </el-button>
+        </el-tooltip>
       </template>
     </el-table-column>
   </el-table>
@@ -44,20 +46,14 @@
     @update:current-page="paginationChange">
   </el-pagination>
 
-  <fixed-add-button
-    @action="$router.push('/exercises?add')">
-  </fixed-add-button>
 </template>
 
 <script>
-  import TableOperations from '@/components/TableOperations.vue'
-  import FixedAddButton from '@/components/FixedAddButton.vue'
   import TableMixin from '@/mixins/table.js'
 
   export default {
     name: 'table-content',
     mixins: [ TableMixin ],
-    components: { TableOperations, FixedAddButton },
     data() {
       return {}
     },
